@@ -1,3 +1,6 @@
-^.*\.Rproj$
+^ASSAMC\.Rproj$
 ^\.Rproj\.user$
 ^\.github$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
