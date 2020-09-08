@@ -10,13 +10,14 @@ popsim<-function(x){
   #selex.L = landings selectivity at age,
   #logR.resids = recruitment residuals (lognormal)
 
-  nyr=x$nyr; f=x$f; ages=x$ages; nages=x$nages;
+  year=x$year; nyr=x$nyr; f=x$f; ages=x$ages; nages=x$nages;
   R0=x$R0; h=x$h; Phi.0=x$Phi.0;
   M.age=x$M.age; W.mt=x$W.mt; mat.age=x$mat.age; prop.f=x$proportion.female;
   selex_fleet=x$selex_fleet; logR.resid=x$logR.resid;
   logR_sd=x$logR_sd; om_bias_cor=x$om_bias_cor; bias_cor_method=x$bias_cor_method;
   initial_equilibrium_F=x$initial_equilibrium_F;
   SRmodel=x$SRmodel;
+
 
   SSB<-biomass.mt<-abundance<-rep(0,nyr) #quantities of interest (annual)
 
@@ -35,23 +36,12 @@ popsim<-function(x){
   reprod=prop.f*mat.age*W.mt #measure of reproductive capacity at age
 
   #Initial conditions assumes equilbrium age structure given initial F
-  if (initial_equilibrium_F==FALSE) {
-    N.pr1=rep(1,nages)
-
-    for (a in 1:(nages-1)) {
-     N.pr1[a+1]=N.pr1[a]*exp(-M.age[a])
-    }
-    N.pr1[nages]=N.pr1[nages]/(1-exp(-M.age[nages]))  #Plus group
-    Phi.F=sum(N.pr1*reprod)
-  } else {
-    N.pr1=rep(1,nages) #Number of spawners per recruit at age
-    Z=f[1]*selex_fleet$fleet1+M.age
-    for (a in 1:(nages-1))
-    {N.pr1[a+1]=N.pr1[a]*exp(-Z[a])}
-    N.pr1[nages]=N.pr1[nages]/(1-exp(-Z[nages])) #Plus group
-    Phi.F=sum(N.pr1*reprod) #Spawners per recruit based on mature female biomass
-  }
-
+  N.pr1=rep(1,nages) #Number of spawners per recruit at age
+  Z=f[1]*selex_fleet$fleet1+M.age
+  for (a in 1:(nages-1))
+  {N.pr1[a+1]=N.pr1[a]*exp(-Z[a])}
+  N.pr1[nages]=N.pr1[nages]/(1-exp(-Z[nages])) #Plus group
+  Phi.F=sum(N.pr1*reprod) #Spawners per recruit based on mature female biomass
 
   if(om_bias_cor==TRUE){
    BC <- logR_sd^2/2
@@ -78,7 +68,6 @@ popsim<-function(x){
 
   if (R.eq<1) {R.eq=1}  #Catch numerical possibility that equilibrium R is negative
   N.age[1,]=R.eq*N.pr1
-
 
   for (i in 1:(nyr-1)){
     Z=f[i]*selex_fleet$fleet1 + M.age
@@ -111,6 +100,19 @@ popsim<-function(x){
 
   selex.D=rep(0,nages) #selex of discards. not used here (set to 0), but required as input for msy calculations
   msy=msy_calcs(steep=h, R0=R0, M=M.age, wgt=W.mt, prop.f=prop.f, selL=selex_fleet$fleet1, selD=selex.D, selZ=selex_fleet$fleet1, mat.f=mat.age, mat.m=NULL, sigma=logR_sd, maxF=4.0, step=0.001, om_bias_cor=om_bias_cor, bias_cor_method=bias_cor_method, SRmodel=SRmodel)
+
+  if(initial_equilibrium_F==FALSE){
+    year<-year[1]:(year[length(year)]-1)
+    SSB<-SSB[2:length(SSB)]
+    abundance<-abundance[2:length(abundance)]
+    biomass.mt<-biomass.mt[2:length(biomass.mt)]
+    N.age <- N.age[2:nrow(N.age),]
+    L.age$fleet1 <- L.age$fleet1[2:nrow(L.age$fleet1),]
+    L.knum$fleet1 <- L.knum$fleet1[2:length(L.knum$fleet1)]
+    L.mt$fleet1 <- L.mt$fleet1[2:length(L.knum$fleet1)]
+    f <- f[2:length(f)]
+    FAA <- FAA[2:nrow(FAA),]
+  }
 
   return(list(year=year, SSB=SSB, abundance=abundance, biomass.mt=biomass.mt, N.age=N.age, L.age=L.age, L.knum=L.knum, L.mt=L.mt, msy=msy, f=f, FAA=FAA))
 } #end popsim

@@ -29,9 +29,9 @@ run_om <- function(input_list=NULL,
     set.seed(input_list$seed_num)
   }
 
-  # if (input_list$initial_equilibrium_F==FALSE){
-  #   input_list$year <- (input_list$year[1]-1):input_list$year[length(input_list$year)]
-  # }
+  if (input_list$initial_equilibrium_F==FALSE){
+    input_list$year <- input_list$year[1]:(input_list$year[length(input_list$year)]+1)
+  }
   nyr <- length(input_list$year)
   nages <- length(input_list$ages)
 
@@ -50,9 +50,8 @@ run_om <- function(input_list=NULL,
                      middle_year=input_list$middle_year,
                      nyr=nyr,
                      om_sim_num=input_list$om_sim_num,
-                     f_dev_matrix=f_dev_matrix)
-
-
+                     f_dev_matrix=f_dev_matrix,
+                     initial_equilibrium_F=input_list$initial_equilibrium_F)
 
   ## Set up R deviations-at-age per iteration
   r_dev_matrix <- r_dev_case(r_dev_change=input_list$r_dev_change,
@@ -74,6 +73,12 @@ run_om <- function(input_list=NULL,
   setwd(paste(maindir))
 
   for(om_sim in 1:om_sim_num){
+    if (om_sim>1 & input_list$initial_equilibrium_F==FALSE){
+      input_list$year <- input_list$year[1]:(input_list$year[length(input_list$year)]+1)
+      nyr <- length(input_list$year)
+    }
+
+
     logR.resid <- r_dev_matrix[om_sim,]
     logf.resid <- f_dev_matrix[om_sim,]
     f <- f_matrix[om_sim,]
@@ -185,6 +190,11 @@ run_om <- function(input_list=NULL,
                      initial_equilibrium_F=input_list$initial_equilibrium_F)
 
     om_output <<- popsim(x=om_input)
+    if(input_list$initial_equilibrium_F==FALSE){
+      om_input$year <<- om_input$year[1]:(om_input$year[length(om_input$year)]-1)
+      om_input$nyr <<- length(om_input$year)
+      input_list$year <- input_list$year[1]:(input_list$year[length(input_list$year)]-1)
+    }
 
     ## Simulate the survey index
     survey_age_comp <- vector(mode="list", length=input_list$survey_num)

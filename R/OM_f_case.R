@@ -31,18 +31,27 @@ f_case <- function(f_pattern=1,
                    start_year=NULL, middle_year=NULL,
                    nyr=30,
                    om_sim_num=160,
-                   f_dev_matrix=f_dev_matrix){
+                   f_dev_matrix=f_dev_matrix,
+                   initial_equilibrium_F=TRUE){
 
   f_matrix <- matrix(NA, nrow=om_sim_num, ncol=nyr)
 
+  if(initial_equilibrium_F==FALSE){
+    col_id <- 2:ncol(f_matrix)
+    f_matrix[,1] <- rep(0, nrow(f_matrix))
+    nyr=nyr-1
+  } else {
+    col_id <- 1:ncol(f_matrix)
+  }
+
   for(om_sim in 1:om_sim_num){
-    if(f_pattern %in% c(1,2)) f_matrix[om_sim,] <- seq(start_val, end_val, length=nyr)*exp(f_dev_matrix[om_sim,])
+    if(f_pattern %in% c(1,2)) f_matrix[om_sim,col_id] <- seq(start_val, end_val, length=nyr)*exp(f_dev_matrix[om_sim,col_id])
 
-    if(f_pattern %in% c(3,4)) f_matrix[om_sim,] <- c(seq(start_val, middle_val, length=middle_year), seq(middle_val, end_val, length=nyr-middle_year))*exp(f_dev_matrix[om_sim,])
+    if(f_pattern %in% c(3,4)) f_matrix[om_sim,col_id] <- c(seq(start_val, middle_val, length=middle_year), seq(middle_val, end_val, length=nyr-middle_year))*exp(f_dev_matrix[om_sim,col_id])
 
-    if(f_pattern == 5) f_matrix[om_sim,] <- rep(start_val, length=nyr)*exp(f_dev_matrix[om_sim,])
+    if(f_pattern == 5) f_matrix[om_sim,col_id] <- rep(start_val, length=nyr)*exp(f_dev_matrix[om_sim,col_id])
 
-    if(f_pattern == 6) f_matrix[om_sim,] <- f_val*exp(f_dev_matrix[om_sim,])
+    if(f_pattern == 6) f_matrix[om_sim,col_id] <- f_val*exp(f_dev_matrix[om_sim,col_id])
   }
 
   return(f_matrix)

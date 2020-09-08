@@ -65,6 +65,4 @@ save_initial_input <- function(base_case=TRUE, input_list=NULL, ...){
    update_input <- `[<-`(input_list, names(edits), edits)
    return(update_input)
   }
-
-
 }
