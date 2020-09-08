@@ -3,8 +3,8 @@
 remotes::install_github(repo="Bai-Li-NOAA/Age_Structured_Stock_Assessment_Model_Comparison", force = TRUE)
 library(ASSAMC)
 
-# setwd("C:/Users/bai.li/Documents/Github/Age_Structured_Stock_Assessment_Model_Comparison/ASSAMC/")
-# devtools::load_all()
+setwd("C:/Users/bai.li/Documents/Github/Age_Structured_Stock_Assessment_Model_Comparison/")
+devtools::load_all()
 ## Need to install packages below:
 ## ASAPplots, r4ss, readxl, PBSadmb
 #devtools::install_github("cmlegault/ASAPplots", build_vignettes = TRUE)
@@ -14,7 +14,7 @@ library(ASAPplots)
 library(r4ss)
 
 ## Setup working directory
-maindir <- "C:/Users/bai.li/Documents/Github/Age_Structured_Stock_Assessment_Model_Comparison/ASSAMC/example"
+maindir <- "C:/Users/bai.li/Documents/Github/Age_Structured_Stock_Assessment_Model_Comparison/example"
 
 om_sim_num <- 160 # total number of iterations per case
 keep_sim_num <- 100 # number of kept iterations per case
