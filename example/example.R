@@ -1,10 +1,10 @@
 # install.packages("remotes")
 # install.packages("devtools")
-# remotes::install_github(repo="Bai-Li-NOAA/Age_Structured_Stock_Assessment_Model_Comparison", ref="full-features", build_vignettes=T)
-# library(ASSAMC)
+remotes::install_github(repo="Bai-Li-NOAA/Age_Structured_Stock_Assessment_Model_Comparison", force = TRUE)
+library(ASSAMC)
 
-setwd("C:/Users/bai.li/Documents/Github/Age_Structured_Stock_Assessment_Model_Comparison/ASSAMC/")
-devtools::load_all()
+# setwd("C:/Users/bai.li/Documents/Github/Age_Structured_Stock_Assessment_Model_Comparison/ASSAMC/")
+# devtools::load_all()
 ## Need to install packages below:
 ## ASAPplots, r4ss, readxl, PBSadmb
 #devtools::install_github("cmlegault/ASAPplots", build_vignettes = TRUE)
@@ -31,6 +31,7 @@ median_R0 <- 1000000 #Average annual unfished recruitment (scales the popn)
 median_h <- 0.75 #Steepness of the Beverton-Holt spawner-recruit relationship.
 mean_R0 <- NULL
 mean_h <- NULL
+SRmodel <- 1 # 1=Beverton-Holt; 2=Ricker
 M <- 0.2       #Age-invariant natural mortality
 
 Linf <- 800	  #Asymptotic average length
