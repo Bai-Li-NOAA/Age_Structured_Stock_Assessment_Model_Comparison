@@ -1,3 +1,4 @@
+#' @export
 run_ss <- function(maindir=maindir, subdir="SS", om_sim_num=NULL, casedir=casedir, em_bias_cor=em_bias_cor){
   if(!("r4ss" %in% installed.packages()[,"Package"])) install.packages("r4ss")
   library(r4ss)

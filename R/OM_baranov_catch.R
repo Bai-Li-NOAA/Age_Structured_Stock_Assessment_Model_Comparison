@@ -1,3 +1,4 @@
+#' @export
 baranov <- function(F.age, Z.age, N.age, wgt.age=NULL){
   ## INPUT PARAMETERS:
     #F.age = vector of fishing mortality rate at age

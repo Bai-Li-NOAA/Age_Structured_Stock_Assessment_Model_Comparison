@@ -1,5 +1,5 @@
 ## deviations generator
-
+#' @export
 r_dev_case <- function(r_dev_change, nyr=30, logR_sd=0.1, om_sim_num=160){
 
   ## rec_dev_change:1. TRUE: generate different recruitment deviations per iteration
@@ -26,6 +26,7 @@ r_dev_case <- function(r_dev_change, nyr=30, logR_sd=0.1, om_sim_num=160){
   return(r_dev_matrix)
 }
 
+#' @export
 f_dev_case <- function(f_dev_change, nyr=30, logf_sd=0.1, om_sim_num=160){
 
   ## f_dev_change:1. TRUE: generate different annual F deviations per iteration

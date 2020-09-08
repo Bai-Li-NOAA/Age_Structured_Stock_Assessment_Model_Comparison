@@ -1,3 +1,4 @@
+#' @export
 plot_em_re <- function(em_names, col, plot_nrow, plot_ncol, casedir){
   comparison_var <- c("biomass", "abundance", "ssb", "recruit", "Ftot", "landing", "survey", "fratio", "ssbratio")
   comparison_id <- which(names(om_list) %in% comparison_var)

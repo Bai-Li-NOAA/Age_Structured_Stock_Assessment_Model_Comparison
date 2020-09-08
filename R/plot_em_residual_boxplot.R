@@ -1,3 +1,4 @@
+#' @export
 plot_em_residual_boxplot <- function(em_names, col, casedir){
   for(i in 1:length(em_names)){
     jpeg(file=file.path(casedir, "figure", paste(em_names[i], "_residual_boxplot.jpg"), sep=""), width=170, height=160, units="mm", res=300)

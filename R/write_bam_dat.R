@@ -1,5 +1,5 @@
 #Function to write dat file for BAM
-
+#' @export
 BAM.write.dat<-function(fname, nyr, nages, dat.survey1, dat.survey2=NULL, dat.L, parms,
                      a.lw, b.lw, prop.f, mat.age, M.age, em_bias_cor, SRmodel){
 

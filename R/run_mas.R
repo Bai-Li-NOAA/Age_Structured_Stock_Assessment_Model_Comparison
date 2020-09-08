@@ -1,3 +1,4 @@
+#' @export
 run_mas = function(maindir=maindir, subdir="MAS", om_sim_num=NULL, casedir=casedir){
   # if(!("RMAS" %in% installed.packages()[,"Package"])) {
   #   remotes::install_github("nmfs-fish-tools/RMAS")

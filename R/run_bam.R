@@ -1,3 +1,4 @@
+#' @export
 run_bam <- function(maindir=maindir, subdir="BAM", om_sim_num=NULL, casedir=casedir, em_bias_cor=em_bias_cor){
   if(!("readxl" %in% installed.packages()[,"Package"])) install.packages("readxl")
   library(readxl)

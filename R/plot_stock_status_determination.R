@@ -1,3 +1,4 @@
+#' @export
 plot_stock_status_determination <- function(em_names, col, casedir){
   comparison_var <- c("fratio", "ssbratio")
   comparison_id <- which(names(om_list) %in% comparison_var)

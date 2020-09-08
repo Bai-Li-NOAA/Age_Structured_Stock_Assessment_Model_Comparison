@@ -1,3 +1,4 @@
+#' @export
 run_om <- function(input_list=NULL,
                    show_iter_num=FALSE){
   maindir <- input_list$maindir

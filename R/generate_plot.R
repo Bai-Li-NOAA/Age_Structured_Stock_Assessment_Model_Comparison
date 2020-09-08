@@ -1,3 +1,4 @@
+#' @export
 generate_plot <- function(em_names=NULL,
                           plot_ncol=NULL, plot_nrow=NULL, plot_color=NULL,
                           input_list=NULL,

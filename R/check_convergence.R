@@ -1,3 +1,4 @@
+#' @export
 check_convergence <- function(em_names, om_sim_num, col, plot_ncol, plot_nrow, casedir){
   positive_hessian = matrix(NA, ncol=length(em_names), nrow=om_sim_num)
   gradient = matrix(NA, ncol=length(em_names), nrow=om_sim_num)

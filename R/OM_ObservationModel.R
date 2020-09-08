@@ -1,3 +1,4 @@
+#' @export
 ObsModel<-function(nyr, nages, fleet_num, L, survey_num, survey, L.age, survey.age, cv.L, cv.survey, n.L, n.survey){
 
   ## Purpose: Add lognormal observation error to landings and survey, and sampling error to age comps

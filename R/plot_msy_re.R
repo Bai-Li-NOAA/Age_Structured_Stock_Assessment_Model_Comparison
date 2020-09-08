@@ -1,3 +1,4 @@
+#' @export
 plot_msy_re <- function(em_names, col, casedir=NULL){
   msy_re <- matrix(NA, ncol=length(em_names)*3, nrow=keep_sim_num)
   for(i in 1:keep_sim_num){

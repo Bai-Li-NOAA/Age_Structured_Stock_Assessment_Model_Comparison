@@ -1,3 +1,4 @@
+#' @export
 popsim<-function(x){
   ## INPUT PARAMETERS:
   #x = a list containing the following

@@ -1,3 +1,4 @@
+#' @export
 ## Save initial input values to a list
 save_initial_input <- function(base_case=TRUE, input_list=NULL, ...){
   if (base_case==TRUE) {

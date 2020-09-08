@@ -1,3 +1,4 @@
+#' @export
 plot_agecomp_individual_iteration <- function(em_names, col, casedir){
   comparison_var <- c("agecomp")
   comparison_id <- which(names(om_list) %in% comparison_var)

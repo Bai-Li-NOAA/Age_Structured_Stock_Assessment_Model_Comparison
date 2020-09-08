@@ -1,5 +1,5 @@
 # Stock-Recruitment Functions
-
+#' @export
 SRmodel_fcn<- function(S,h=0.75,R0=100,Phi.0=1,model=1){
   ## Beverton-Holt (B-H) Stock-Recruitment (S-R) Function
   ## INPUT PARAMETERS:

@@ -1,3 +1,4 @@
+#' @export
 msy_calcs<-function(steep, R0, M, wgt, prop.f=0.5, selL, selD, selZ, mat.f=NULL, mat.m=NULL, sigma=0, maxF=1.0, step=0.01, om_bias_cor=FALSE, bias_cor_method=NULL, SRmodel=1, verbose=FALSE){
 
 	## Language:          R

@@ -1,3 +1,4 @@
+#' @export
 convertSRparms <- function(R0, h, phi, sigmaR, mean2med, model){
   BC <- ifelse(mean2med == TRUE, exp(-0.5 * sigmaR^2), exp(0.5 * sigmaR^2))
   if (model==1) {

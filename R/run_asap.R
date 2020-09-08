@@ -1,3 +1,4 @@
+#' @export
 run_asap <- function(maindir=NULL, subdir="ASAP", om_sim_num=NULL, casedir=casedir){
   if(!("ASAPplots" %in% installed.packages()[,"Package"])) devtools::install_github("cmlegault/ASAPplots", build_vignettes = TRUE)
   library(ASAPplots)

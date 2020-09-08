@@ -1,3 +1,4 @@
+#' @export
 run_amak <- function(maindir=NULL, subdir="AMAK", om_sim_num=NULL, casedir=casedir){
   setwd(file.path(casedir, "output", subdir))
   unlink(list.files(file.path(casedir, "output", "AMAK"), full.names = TRUE), recursive = TRUE)
