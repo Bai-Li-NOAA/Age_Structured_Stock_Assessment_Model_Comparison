@@ -1,6 +1,6 @@
 # install.packages("remotes")
 # install.packages("devtools")
-remotes::install_github(repo="Bai-Li-NOAA/Age_Structured_Stock_Assessment_Model_Comparison", force = TRUE)
+remotes::install_github(repo="Bai-Li-NOAA/Age_Structured_Stock_Assessment_Model_Comparison", force=TRUE)
 library(ASSAMC)
 
 setwd("C:/Users/bai.li/Documents/Github/Age_Structured_Stock_Assessment_Model_Comparison/")
@@ -338,5 +338,22 @@ run_em(em_names=c("AMAK", "ASAP", "BAM", "SS"), input_list=updated_input)
 generate_plot(em_names = c("AMAK", "ASAP", "BAM", "SS"),
               plot_ncol=2, plot_nrow=2,
               plot_color = c("orange", "green", "red", "deepskyblue3"),
+              input_list=updated_input,
+              adhoc_bias_cor=TRUE)
+
+#### data-rich (median-unbiased)####
+updated_input <- save_initial_input(base_case=FALSE,
+                                    input_list=base_case_input,
+                                    case_name="data_rich_median",
+                                    year=1:100,
+                                    logR_sd=0.6,
+                                    om_bias_cor=TRUE,
+                                    bias_cor_method="median_unbiased",
+                                    em_bias_cor=TRUE)
+run_om(input_list=updated_input, show_iter_num=F)
+run_em(em_names=c("BAM", "SS"), input_list=updated_input)
+generate_plot(em_names = c("BAM", "SS"),
+              plot_ncol=2, plot_nrow=1,
+              plot_color = c("red", "deepskyblue3"),
               input_list=updated_input,
               adhoc_bias_cor=TRUE)
