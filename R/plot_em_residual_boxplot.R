@@ -10,7 +10,7 @@ plot_em_residual_boxplot <- function(em_names, col, casedir){
     comparison_var <- c("biomass", "abundance", "ssb", "recruit", "Ftot", "landing", "survey", "fratio", "ssbratio")
     comparison_id <- which(names(om_list) %in% comparison_var)
     xlab <- rep("Year", times=length(comparison_var))
-    ylab <- rep("Residuals", times=length(comparison_var))
+    ylab <- rep("RE", times=length(comparison_var))
     legend <- c("Biomass (mt)", "Abundance (1000 fish)", "SSB (mt)", "Recruitment (1000 fish)", "F", "Landings (mt)", "Survey Index (scaled)", "F/FMSY", "SSB/SSBMSY")
 
     for(j in 1:length(comparison_id)){

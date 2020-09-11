@@ -26,7 +26,9 @@ generate_plot <- function(em_names=NULL,
   #### Check convergence and plot gradient histogram ####
   keep_sim_id <- check_convergence(em_names, om_sim_num, col=col, plot_ncol, plot_nrow, casedir=casedir)
 
-  if(length(keep_sim_id) < keep_sim_num) stop ("Increase om_sim_num to get enough number of converged iterations!")
+  if(length(na.omit(keep_sim_id)) < keep_sim_num) stop ("Increase om_sim_num to get enough number of converged iterations!")
+  keep_sim_id <- na.omit(keep_sim_id)
+  keep_sim_num <- input_list$keep_sim_num <- length(keep_sim_id)
 
   #### Check plotted individual iteration real ID ####
   if(keep_sim_num <= figure_number) {
@@ -41,9 +43,9 @@ generate_plot <- function(em_names=NULL,
 
   check_performance(em_names, casedir=casedir)
 
-  plot_timeseries_inidividual_iteration(em_names=em_names, col=col, casedir=casedir)
+  plot_timeseries_inidividual_iteration(em_names=em_names, col=col, casedir=casedir, input_list=input_list)
 
-  plot_ratio_inidividual_iteration(em_names=em_names, col=col, casedir=casedir)
+  plot_ratio_inidividual_iteration(em_names=em_names, col=col, casedir=casedir, input_list=input_list)
 
   plot_agecomp_individual_iteration(em_names=em_names, col=col, casedir=casedir)
 
@@ -53,7 +55,7 @@ generate_plot <- function(em_names=NULL,
 
   plot_msy_re(em_names=em_names, col=col, casedir=casedir)
 
-  plot_em_re(em_names=em_names, col=col, plot_nrow=plot_nrow, plot_ncol=plot_ncol, casedir=casedir)
+  plot_em_re(em_names=em_names, col=col, plot_nrow=plot_nrow, plot_ncol=plot_ncol, casedir=casedir, input_list=input_list)
 
   plot_timeseries_all_iterations(em_names=em_names, col=col, plot_nrow=plot_nrow, plot_ncol=plot_ncol, casedir=casedir)
 

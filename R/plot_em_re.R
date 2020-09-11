@@ -1,5 +1,5 @@
 #' @export
-plot_em_re <- function(em_names, col, plot_nrow, plot_ncol, casedir){
+plot_em_re <- function(em_names, col, plot_nrow, plot_ncol, casedir, input_list){
   comparison_var <- c("biomass", "abundance", "ssb", "recruit", "Ftot", "landing", "survey", "fratio", "ssbratio")
   comparison_id <- which(names(om_list) %in% comparison_var)
   title <- c("Biomass", "Abundance", "SSB", "Recruitment", "F", "Landings", "Survey Index", "Fratio", "SSBratio")
@@ -9,8 +9,8 @@ plot_em_re <- function(em_names, col, plot_nrow, plot_ncol, casedir){
     jpeg(file=file.path(casedir, "figure", paste(title[i], "_re_comparison.jpg", sep="")), width=200, height=120, units="mm", res=300)
     par(mar=c(4, 4, 0.2, 0.2), mfrow=c(plot_nrow, plot_ncol), oma = c(4, 4, 0.2, 0.2))
     for(k in 1:length(em_names)){
-      temp <- matrix(NA, ncol=keep_sim_num, nrow=length(year))
-      re_quantile <- matrix(NA, ncol=length(year), nrow=5)
+      temp <- matrix(NA, ncol=keep_sim_num, nrow=length(input_list$year))
+      re_quantile <- matrix(NA, ncol=length(input_list$year), nrow=5)
       re_quantile_list <- list()
 
       for(j in 1:keep_sim_num){

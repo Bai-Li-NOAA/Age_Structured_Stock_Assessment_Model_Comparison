@@ -1,5 +1,5 @@
 #' @export
-plot_ratio_inidividual_iteration <- function(em_names, col, casedir){
+plot_ratio_inidividual_iteration <- function(em_names, col, casedir, input_list){
   comparison_var <- c("fratio", "ssbratio")
   comparison_id <- which(names(om_list) %in% comparison_var)
   ylab <- c("F/FMSY", "SSB/SSBMSY")
@@ -16,8 +16,8 @@ plot_ratio_inidividual_iteration <- function(em_names, col, casedir){
     for(i in 1:length(comparison_id)){
       ylim=c(min(om_list[[comparison_id[i]]])*0.5, max(om_list[[comparison_id[i]]])*1.5)
 
-      plot(year, om_list[[comparison_id[i]]][,j], pch=19, col=col[1], cex=0.7, ylim=ylim, axes=F, xlab="", ylab="")
-      invisible(sapply(1:length(em_names), function(x) lines(year, em_list[[x]][[comparison_id[i]]][,j], type="l", col=col[x+1], lwd=1.5)))
+      plot(input_list$year, om_list[[comparison_id[i]]][,j], pch=19, col=col[1], cex=0.7, ylim=ylim, axes=F, xlab="", ylab="")
+      invisible(sapply(1:length(em_names), function(x) lines(input_list$year, em_list[[x]][[comparison_id[i]]][,j], type="l", col=col[x+1], lwd=1.5)))
 
       axis(1)
       mtext(side=1, text=xlab, line=2, cex=0.6, font=2, col="blue")

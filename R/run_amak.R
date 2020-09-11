@@ -22,11 +22,18 @@ run_amak <- function(maindir=NULL, subdir="AMAK", om_sim_num=NULL, casedir=cased
       writeLines(char.lines, con=file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "amak.dat"))
 
       char.lines <- readLines(datf)
+      char.lines[grep("#styr\t", char.lines)+1] <- as.character(paste(om_output$year[1], collapse="\t"))
+      char.lines[grep("#endyr\t", char.lines)+1] <- as.character(paste(om_output$year[length(om_output$year)], collapse="\t"))
+
       char.lines[grep("#catch\t", char.lines)+1] <- as.character(paste(em_input$L.obs$fleet1, collapse="\t"))
       char.lines[grep("#catch_cv", char.lines)+1] <- as.character(paste(rep(em_input$cv.L$fleet1, length(em_input$L.obs$fleet1)), collapse="\t"))
       char.lines[grep("#sample_ages_fsh", char.lines)+1] <- as.character(paste(rep(em_input$n.L$fleet1, length(em_input$L.obs$fleet1)), collapse="\t"))
       for (i in 1:nrow(em_input$L.age.obs$fleet1)){
         char.lines[grep("#page_fsh", char.lines)+i]<-as.character(paste(em_input$L.age.obs$fleet1[i,],collapse="\t"))
+      }
+
+      for (i in 1:nrow(em_input$L.age.obs$fleet1)){
+      char.lines[grep("#wt_age_fsh", char.lines)+i] <- as.character(paste(om_input$W.mt, collapse="\t"))
       }
 
       for (survey_id in 1:om_input$survey_num){
@@ -42,6 +49,10 @@ run_amak <- function(maindir=NULL, subdir="AMAK", om_sim_num=NULL, casedir=cased
       temp <- do.call(rbind, em_input$survey.age.obs)
       for (i in 1:nrow(temp)){
         char.lines[grep("#page_ind", char.lines)+i]<-as.character(paste(temp[i,],collapse="\t"))
+      }
+
+      for (i in 1:nrow(temp)){
+      char.lines[grep("#wt_age_ind", char.lines)+i] <- as.character(paste(rep(1, om_input$nages), collapse="\t"))
       }
 
       writeLines(char.lines, con=file.path(casedir, "output", subdir, paste("s", om_sim, sep=""),  "amak_data.dat"))

@@ -109,7 +109,7 @@ popsim<-function(x){
     N.age <- N.age[2:nrow(N.age),]
     L.age$fleet1 <- L.age$fleet1[2:nrow(L.age$fleet1),]
     L.knum$fleet1 <- L.knum$fleet1[2:length(L.knum$fleet1)]
-    L.mt$fleet1 <- L.mt$fleet1[2:length(L.knum$fleet1)]
+    L.mt$fleet1 <- L.mt$fleet1[2:length(L.mt$fleet1)]
     f <- f[2:length(f)]
     FAA <- FAA[2:nrow(FAA),]
   }
