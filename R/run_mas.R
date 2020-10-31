@@ -3,7 +3,7 @@ run_mas = function(maindir=maindir, subdir="MAS", om_sim_num=NULL, casedir=cased
   # if(!("RMAS" %in% installed.packages()[,"Package"])) {
   #   remotes::install_github("nmfs-fish-tools/RMAS")
   # }
-  remotes::install_github("nmfs-fish-tools/RMAS")
+  #remotes::install_github("nmfs-fish-tools/RMAS")
   list_of_packages = c("Rcpp", "jsonlite", "callr")
   missing_packages = list_of_packages[!(list_of_packages %in% installed.packages()[,"Package"])]
   if(length(missing_packages)) install.packages(missing_packages)
