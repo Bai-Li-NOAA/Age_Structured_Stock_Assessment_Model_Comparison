@@ -3,7 +3,7 @@ run_mas = function(maindir=maindir, subdir="MAS", om_sim_num=NULL, casedir=cased
   # if(!("RMAS" %in% installed.packages()[,"Package"])) {
   #   remotes::install_github("nmfs-fish-tools/RMAS")
   # }
-
+  remotes::install_github("nmfs-fish-tools/RMAS")
   list_of_packages = c("Rcpp", "jsonlite", "callr")
   missing_packages = list_of_packages[!(list_of_packages %in% installed.packages()[,"Package"])]
   if(length(missing_packages)) install.packages(missing_packages)
@@ -22,7 +22,9 @@ run_mas = function(maindir=maindir, subdir="MAS", om_sim_num=NULL, casedir=cased
 
     #load the r4mas module
     load(file=file.path(casedir, "output", "OM", paste("OM", om_sim, ".RData", sep="")))
-    r4mas = Module("rmas", dyn.load(paste(rmas_dir, "RMAS", .Platform$dynlib.ext, sep = "")))
+    d <- system.file(package = "RMAS")
+    r4mas <- Module("rmas", dyn.load(paste(d,"/libs/x64/RMAS", .Platform$dynlib.ext, sep = "")))
+    #r4mas = Module("rmas", dyn.load(paste(rmas_dir, "RMAS", .Platform$dynlib.ext, sep = "")))
     nyears=om_input$nyr
     nseasons=1
     nages=om_input$nages
