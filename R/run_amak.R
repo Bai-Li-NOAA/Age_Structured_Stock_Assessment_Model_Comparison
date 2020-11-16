@@ -59,12 +59,19 @@ run_amak <- function(maindir=NULL, subdir="AMAK", om_sim_num=NULL, casedir=cased
     }
   }
 
-  for (om_sim in 1:om_sim_num){
+  mclapply(1:om_sim_num, function(om_sim) {
     setwd(file.path(casedir, "output", subdir, paste("s", om_sim, sep="")))
     file.copy(file.path(maindir, "em_input", "amak.exe"), file.path(casedir,"output", subdir, paste("s", om_sim, sep=""), "amak.exe"), overwrite = T)
     system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "amak.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "amak.dat"), sep = " "), show.output.on.console = FALSE)
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "amak.exe"))
-  }
+  })
+
+  # for (om_sim in 1:om_sim_num){
+  #   setwd(file.path(casedir, "output", subdir, paste("s", om_sim, sep="")))
+  #   file.copy(file.path(maindir, "em_input", "amak.exe"), file.path(casedir,"output", subdir, paste("s", om_sim, sep=""), "amak.exe"), overwrite = T)
+  #   system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "amak.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "amak.dat"), sep = " "), show.output.on.console = FALSE)
+  #   file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "amak.exe"))
+  # }
 }
 
 
