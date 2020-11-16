@@ -44,11 +44,22 @@ run_asap <- function(maindir=NULL, subdir="ASAP", om_sim_num=NULL, casedir=cased
     WriteASAP3DatFile(fname = file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "asap3.DAT"), dat.object=asap_input, header.text = "")
   }))
 
-  invisible(lapply(1:om_sim_num, function(om_sim) {
+  cl <- detectCores()-2
+  registerDoParallel(cl)
 
+  foreach (om_sim = 1:om_sim_num) %dopar% {
     setwd(file.path(casedir, "output", subdir, paste("s", om_sim, sep="")))
     file.copy(file.path(maindir, "em_input", "ASAP3.exe"), file.path(casedir,"output", subdir, paste("s", om_sim, sep=""), "ASAP3.exe"), overwrite = T)
     system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ASAP3.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "asap3.DAT"), sep = " "), show.output.on.console = FALSE)
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ASAP3.exe"))
-  }))
+  }
+  stopCluster(cl)
+
+  # invisible(lapply(1:om_sim_num, function(om_sim) {
+  #
+  #   setwd(file.path(casedir, "output", subdir, paste("s", om_sim, sep="")))
+  #   file.copy(file.path(maindir, "em_input", "ASAP3.exe"), file.path(casedir,"output", subdir, paste("s", om_sim, sep=""), "ASAP3.exe"), overwrite = T)
+  #   system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ASAP3.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "asap3.DAT"), sep = " "), show.output.on.console = FALSE)
+  #   file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ASAP3.exe"))
+  # }))
 }

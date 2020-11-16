@@ -87,10 +87,21 @@ run_bam <- function(maindir=maindir, subdir="BAM", om_sim_num=NULL, casedir=case
     }
   }
 
-  for (om_sim in 1:om_sim_num){
+  cl <- detectCores()-2
+  registerDoParallel(cl)
+
+  foreach (om_sim = 1:om_sim_num) %dopar% {
     setwd(file.path(casedir, "output", subdir, paste("s", om_sim, sep="")))
     file.copy(file.path(maindir, "em_input", "BAM-Sim.exe"), file.path(casedir,"output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"), overwrite = T)
     system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.dat"), sep = " "), show.output.on.console = FALSE)
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"))
   }
+  stopCluster(cl)
+
+  # for (om_sim in 1:om_sim_num){
+  #   setwd(file.path(casedir, "output", subdir, paste("s", om_sim, sep="")))
+  #   file.copy(file.path(maindir, "em_input", "BAM-Sim.exe"), file.path(casedir,"output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"), overwrite = T)
+  #   system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.dat"), sep = " "), show.output.on.console = FALSE)
+  #   file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"))
+  # }
 }

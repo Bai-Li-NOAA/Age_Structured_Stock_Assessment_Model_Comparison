@@ -65,13 +65,24 @@ run_ss <- function(maindir=maindir, subdir="SS", om_sim_num=NULL, casedir=casedi
     file.copy(file.path(maindir, "em_input", "wtatage.ss"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "wtatage.ss"), overwrite = T)
   }
 
-  for (om_sim in 1:om_sim_num){
-    # setwd(file.path(maindir, "output", subdir, paste("s", om_sim, sep="")))
-    # system(paste(file.path(maindir, "em_input", "ss.exe"), " data.ss", sep = ""), show.output.on.console = FALSE)
+  cl <- detectCores()-2
+  registerDoParallel(cl)
 
+  foreach (om_sim = 1:om_sim_num) %dopar% {
     setwd(file.path(casedir, "output", subdir, paste("s", om_sim, sep="")))
     file.copy(file.path(maindir, "em_input", "ss.exe"), file.path(casedir,"output", subdir, paste("s", om_sim, sep=""), "ss.exe"), overwrite = T)
     system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ss.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "data.ss"), sep = " "), show.output.on.console = FALSE)
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ss.exe"))
   }
+  stopCluster(cl)
+
+  # for (om_sim in 1:om_sim_num){
+  #   # setwd(file.path(maindir, "output", subdir, paste("s", om_sim, sep="")))
+  #   # system(paste(file.path(maindir, "em_input", "ss.exe"), " data.ss", sep = ""), show.output.on.console = FALSE)
+  #
+  #   setwd(file.path(casedir, "output", subdir, paste("s", om_sim, sep="")))
+  #   file.copy(file.path(maindir, "em_input", "ss.exe"), file.path(casedir,"output", subdir, paste("s", om_sim, sep=""), "ss.exe"), overwrite = T)
+  #   system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ss.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "data.ss"), sep = " "), show.output.on.console = FALSE)
+  #   file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ss.exe"))
+  # }
 }
