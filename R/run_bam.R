@@ -96,7 +96,7 @@ run_bam <- function(maindir=maindir, subdir="BAM", om_sim_num=NULL, casedir=case
     system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.dat"), sep = " "), show.output.on.console = FALSE)
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"))
   }
-  stopCluster(cl)
+  #stopCluster(cl)
 
   # for (om_sim in 1:om_sim_num){
   #   setwd(file.path(casedir, "output", subdir, paste("s", om_sim, sep="")))

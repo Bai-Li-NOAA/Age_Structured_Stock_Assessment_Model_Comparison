@@ -74,7 +74,7 @@ run_ss <- function(maindir=maindir, subdir="SS", om_sim_num=NULL, casedir=casedi
     system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ss.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "data.ss"), sep = " "), show.output.on.console = FALSE)
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ss.exe"))
   }
-  stopCluster(cl)
+  #stopCluster(cl)
 
   # for (om_sim in 1:om_sim_num){
   #   # setwd(file.path(maindir, "output", subdir, paste("s", om_sim, sep="")))

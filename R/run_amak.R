@@ -68,7 +68,7 @@ run_amak <- function(maindir=NULL, subdir="AMAK", om_sim_num=NULL, casedir=cased
     system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "amak.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "amak.dat"), sep = " "), show.output.on.console = FALSE)
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "amak.exe"))
   }
-  stopCluster(cl)
+  #stopCluster(cl)
 
   # for (om_sim in 1:om_sim_num){
   #   setwd(file.path(casedir, "output", subdir, paste("s", om_sim, sep="")))

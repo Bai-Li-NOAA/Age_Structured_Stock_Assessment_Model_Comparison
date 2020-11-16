@@ -53,7 +53,7 @@ run_asap <- function(maindir=NULL, subdir="ASAP", om_sim_num=NULL, casedir=cased
     system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ASAP3.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "asap3.DAT"), sep = " "), show.output.on.console = FALSE)
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ASAP3.exe"))
   }
-  stopCluster(cl)
+  #stopCluster(cl)
 
   # invisible(lapply(1:om_sim_num, function(om_sim) {
   #
