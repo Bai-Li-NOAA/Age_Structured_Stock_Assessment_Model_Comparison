@@ -95,6 +95,11 @@ run_bam <- function(maindir=maindir, subdir="BAM", om_sim_num=NULL, casedir=case
     file.copy(file.path(maindir, "em_input", "BAM-Sim.exe"), file.path(casedir,"output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"), overwrite = T)
     system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.dat"), sep = " "), show.output.on.console = FALSE)
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"))
+    file_list <- list.files(path = getwd())
+    file.remove(c(file_list[!(file_list %in% c(list.files(path = getwd(), pattern = c(".rep")),
+                                               list.files(path = getwd(), pattern = c(".std")),
+                                               list.files(path = getwd(), pattern = c(".rdat")),
+                                               list.files(path = getwd(), pattern = c(".cov"))))]))
   }
   #stopCluster(cl)
 

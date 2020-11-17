@@ -52,6 +52,11 @@ run_asap <- function(maindir=NULL, subdir="ASAP", om_sim_num=NULL, casedir=cased
     file.copy(file.path(maindir, "em_input", "ASAP3.exe"), file.path(casedir,"output", subdir, paste("s", om_sim, sep=""), "ASAP3.exe"), overwrite = T)
     system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ASAP3.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "asap3.DAT"), sep = " "), show.output.on.console = FALSE)
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ASAP3.exe"))
+    file_list <- list.files(path = getwd())
+    file.remove(c(file_list[!(file_list %in% c(list.files(path = getwd(), pattern = c(".rep")),
+                                               list.files(path = getwd(), pattern = c(".std")),
+                                               list.files(path = getwd(), pattern = c(".rdat")),
+                                               list.files(path = getwd(), pattern = c(".cov"))))]))
   }
   #stopCluster(cl)
 

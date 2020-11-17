@@ -67,6 +67,11 @@ run_amak <- function(maindir=NULL, subdir="AMAK", om_sim_num=NULL, casedir=cased
     file.copy(file.path(maindir, "em_input", "amak.exe"), file.path(casedir,"output", subdir, paste("s", om_sim, sep=""), "amak.exe"), overwrite = T)
     system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "amak.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "amak.dat"), sep = " "), show.output.on.console = FALSE)
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "amak.exe"))
+    file_list <- list.files(path = getwd())
+    file.remove(c(file_list[!(file_list %in% c(list.files(path = getwd(), pattern = c(".rep")),
+                                               list.files(path = getwd(), pattern = c(".std")),
+                                               list.files(path = getwd(), pattern = c(".rdat")),
+                                               list.files(path = getwd(), pattern = c(".cov"))))]))
   }
   #stopCluster(cl)
 
