@@ -97,6 +97,7 @@ run_bam <- function(maindir=maindir, subdir="BAM", om_sim_num=NULL, casedir=case
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"))
     file_list <- list.files(path = getwd())
     file.remove(c(file_list[!(file_list %in% c(list.files(path = getwd(), pattern = c(".rep")),
+                                               list.files(path = getwd(), pattern = c(".par")),
                                                list.files(path = getwd(), pattern = c(".std")),
                                                list.files(path = getwd(), pattern = c(".rdat")),
                                                list.files(path = getwd(), pattern = c(".cov"))))]))

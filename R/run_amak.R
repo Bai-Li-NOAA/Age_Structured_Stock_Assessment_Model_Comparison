@@ -69,6 +69,7 @@ run_amak <- function(maindir=NULL, subdir="AMAK", om_sim_num=NULL, casedir=cased
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "amak.exe"))
     file_list <- list.files(path = getwd())
     file.remove(c(file_list[!(file_list %in% c(list.files(path = getwd(), pattern = c(".rep")),
+                                               list.files(path = getwd(), pattern = c(".par")),
                                                list.files(path = getwd(), pattern = c(".std")),
                                                list.files(path = getwd(), pattern = c(".rdat")),
                                                list.files(path = getwd(), pattern = c(".cov"))))]))

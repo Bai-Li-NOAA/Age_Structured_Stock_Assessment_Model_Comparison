@@ -75,6 +75,7 @@ run_ss <- function(maindir=maindir, subdir="SS", om_sim_num=NULL, casedir=casedi
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ss.exe"))
     file_list <- list.files(path = getwd())
     file.remove(c(file_list[!(file_list %in% c(list.files(path = getwd(), pattern = c(".rep")),
+                                               list.files(path = getwd(), pattern = c(".par")),
                                                list.files(path = getwd(), pattern = c(".std")),
                                                list.files(path = getwd(), pattern = c(".rdat")),
                                                list.files(path = getwd(), pattern = c(".cov"))))]))

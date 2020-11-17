@@ -54,6 +54,7 @@ run_asap <- function(maindir=NULL, subdir="ASAP", om_sim_num=NULL, casedir=cased
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ASAP3.exe"))
     file_list <- list.files(path = getwd())
     file.remove(c(file_list[!(file_list %in% c(list.files(path = getwd(), pattern = c(".rep")),
+                                               list.files(path = getwd(), pattern = c(".par")),
                                                list.files(path = getwd(), pattern = c(".std")),
                                                list.files(path = getwd(), pattern = c(".rdat")),
                                                list.files(path = getwd(), pattern = c(".cov"))))]))
