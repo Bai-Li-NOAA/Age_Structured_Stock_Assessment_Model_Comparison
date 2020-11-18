@@ -72,7 +72,7 @@ run_om <- function(input_list=NULL,
 
   setwd(paste(maindir))
 
-  for(om_sim in 1:om_sim_num){
+  for(om_sim in 1:input_list$om_sim_num){
     if (om_sim>1 & input_list$initial_equilibrium_F==FALSE){
       input_list$year <- input_list$year[1]:(input_list$year[length(input_list$year)]+1)
       nyr <- length(input_list$year)
