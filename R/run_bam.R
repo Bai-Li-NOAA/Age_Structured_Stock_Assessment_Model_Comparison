@@ -1,5 +1,5 @@
 #' @export
-run_bam <- function(maindir=maindir, subdir="BAM", om_sim_num=NULL, casedir=casedir, em_bias_cor=em_bias_cor){
+run_bam <- function(maindir=maindir, subdir="BAM", om_sim_num=NULL, casedir=casedir, em_bias_cor=em_bias_cor, input_filename=NULL){
   if(!("readxl" %in% installed.packages()[,"Package"])) install.packages("readxl")
   library(readxl)
 
@@ -7,6 +7,7 @@ run_bam <- function(maindir=maindir, subdir="BAM", om_sim_num=NULL, casedir=case
   unlink(list.files(file.path(casedir, "output", "BAM"), full.names = TRUE), recursive = TRUE)
   sapply(1:om_sim_num, function(x) dir.create(file.path(casedir, "output", subdir, paste("s", x, sep=""))))
 
+  file.copy(file.path(maindir, "em_input", input_filename), file.path(maindir, "em_input", "BAM.DatInput.Parms.xlsx"), overwrite = T)
   bam_parms=read_xlsx(path=file.path(maindir, "em_input", "BAM.DatInput.Parms.xlsx"))
 
   modify_input = "partial"

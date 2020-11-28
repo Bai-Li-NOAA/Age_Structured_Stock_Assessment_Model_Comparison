@@ -1,9 +1,10 @@
 #' @export
-run_ss <- function(maindir=maindir, subdir="SS", om_sim_num=NULL, casedir=casedir, em_bias_cor=em_bias_cor){
+run_ss <- function(maindir=maindir, subdir="SS", om_sim_num=NULL, casedir=casedir, em_bias_cor=em_bias_cor, input_filename=NULL){
   if(!("r4ss" %in% installed.packages()[,"Package"])) install.packages("r4ss")
   library(r4ss)
 
   setwd(file.path(casedir, "output", subdir))
+  file.copy(file.path(maindir, "em_input", input_filename), file.path(maindir, "em_input", "control.ss"), overwrite = T)
   unlink(list.files(file.path(casedir, "output", "SS"), full.names = TRUE), recursive = TRUE)
   sapply(1:om_sim_num, function(x) dir.create(file.path(casedir, "output", subdir, paste("s", x, sep=""))))
 

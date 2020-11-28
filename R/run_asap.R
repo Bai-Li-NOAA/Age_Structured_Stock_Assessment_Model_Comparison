@@ -1,9 +1,12 @@
 #' @export
-run_asap <- function(maindir=NULL, subdir="ASAP", om_sim_num=NULL, casedir=casedir){
+run_asap <- function(maindir=NULL, subdir="ASAP", om_sim_num=NULL, casedir=casedir, input_filename=NULL){
   if(!("ASAPplots" %in% installed.packages()[,"Package"])) devtools::install_github("cmlegault/ASAPplots", build_vignettes = TRUE)
   library(ASAPplots)
 
   setwd(file.path(casedir, "output", subdir))
+
+  file.copy(file.path(maindir, "em_input", input_filename), file.path(maindir, "em_input", "asap3.DAT"), overwrite = T)
+
   unlink(list.files(file.path(casedir, "output", "ASAP"), full.names = TRUE), recursive = TRUE)
 
   sapply(1:om_sim_num, function(x) dir.create(file.path(casedir, "output", subdir, paste("s", x, sep=""))))

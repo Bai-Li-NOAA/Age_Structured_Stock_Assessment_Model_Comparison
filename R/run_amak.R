@@ -1,8 +1,10 @@
 #' @export
-run_amak <- function(maindir=NULL, subdir="AMAK", om_sim_num=NULL, casedir=casedir){
+run_amak <- function(maindir=NULL, subdir="AMAK", om_sim_num=NULL, casedir=casedir, input_filename=NULL){
   setwd(file.path(casedir, "output", subdir))
   unlink(list.files(file.path(casedir, "output", "AMAK"), full.names = TRUE), recursive = TRUE)
   sapply(1:om_sim_num, function(x) dir.create(file.path(casedir, "output", subdir, paste("s", x, sep=""))))
+
+  file.copy(file.path(maindir, "em_input", input_filename), file.path(maindir, "em_input", "amak.dat"), overwrite = T)
 
   ctlf <- file.path(maindir, "em_input", "amak.dat")
   datf <- file.path(maindir, "em_input", "amak_data.dat")
