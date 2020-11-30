@@ -62,13 +62,13 @@ check_convergence <- function(em_names, om_sim_num, col, plot_ncol, plot_nrow, c
     dev.off()
   }
 
-  keep_sim_id <<- c(1:om_sim_num)[-unique(c(
-  unlist(sapply(1:length(em_names), function(x) which(convergence_measures$gradient[,x] %in% boxplot.stats(convergence_measures$gradient[,x])$out))),
-  unique(unlist(sapply(1:ncol(convergence_measures$positive_hessian), function(x) which(convergence_measures$positive_hessian[,x]==0))))))][1:keep_sim_num]
-  #
   # keep_sim_id <<- c(1:om_sim_num)[-unique(c(
-  #   unlist(sapply(1:length(em_names), function(x) which(convergence_measures$gradient[,x] > 0.001))),
-  #   unique(unlist(sapply(1:ncol(convergence_measures$positive_hessian), function(x) which(convergence_measures$positive_hessian[,x]==0))))))][1:keep_sim_num]
+  # unlist(sapply(1:length(em_names), function(x) which(convergence_measures$gradient[,x] %in% boxplot.stats(convergence_measures$gradient[,x])$out))),
+  # unique(unlist(sapply(1:ncol(convergence_measures$positive_hessian), function(x) which(convergence_measures$positive_hessian[,x]==0))))))][1:keep_sim_num]
+  #
+  keep_sim_id <<- c(1:om_sim_num)[-unique(c(
+    unlist(sapply(1:length(em_names), function(x) which(convergence_measures$gradient[,x] > 0.006))),
+    unique(unlist(sapply(1:ncol(convergence_measures$positive_hessian), function(x) which(convergence_measures$positive_hessian[,x]==0))))))][1:keep_sim_num]
 
 
   if(max(convergence_measures$gradient[keep_sim_id,], na.rm = T)<0.1){
