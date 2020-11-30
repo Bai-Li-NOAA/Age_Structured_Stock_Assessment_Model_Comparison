@@ -33,8 +33,8 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
     #om_survey_err[,om_sim] <- em_input$survey.obs$survey1
     om_geomR0[om_sim] <- om_input$median_R0/1000
     om_arimR0[om_sim] <- om_input$mean_R0/1000
-    om_geomS0[om_sim] <- om_geomR0[om_sim]*om_input$Phi.0
-    om_arimS0[om_sim] <- om_arimR0[om_sim]*om_input$Phi.0
+    om_geomS0[om_sim] <- om_input$median_R0*om_input$Phi.0
+    om_arimS0[om_sim] <- om_input$mean_R0*om_input$Phi.0
   }
   om_list <- list(om_biomass, om_abundance, om_ssb, om_recruit, om_Ftot, om_landing, om_survey, om_msy, om_fmsy, om_ssbmsy, om_fratio, om_ssbratio, om_agecomp, om_geomR0, om_arimR0, om_geomS0, om_arimS0)
   names(om_list) <- c("biomass", "abundance", "ssb", "recruit", "Ftot", "landing", "survey", "msy", "fmsy", "ssbmsy", "fratio", "ssbratio", "agecomp", "geomR0", "arimR0", "geomS0", "arimS0")
@@ -85,6 +85,23 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
         amak_msy[, om_sim] <- amak_msy_adhoc$msy
         amak_fmsy[, om_sim] <- round(amak_msy_adhoc$Fmsy, digits = 3)
         amak_ssbmsy[, om_sim] <- amak_msy_adhoc$SSBmsy
+      } else {
+          amak_msy[, om_sim] <- amak_std$value[which(amak_std$name=="MSY")]
+          amak_fmsy[, om_sim] <- round(amak_std$value[which(amak_std$name=="Fmsy")], digits = 3)
+          amak_ssbmsy[, om_sim] <- amak_std$value[which(amak_std$name=="Bmsy")]
+      }
+
+
+      amak_fratio[, om_sim] <- amak_Ftot[, om_sim]/amak_fmsy[om_sim]
+      amak_ssbratio[, om_sim] <- amak_ssb[,om_sim]/amak_ssbmsy[om_sim]
+      amak_agecomp[[om_sim]] <- apply(amak_output$N[,2:ncol(amak_output$N)]/1000, 1, function(x) x/sum(x))
+
+      if (om_input$bias_cor_method=="median_unbiased") {
+        amak_R0[om_sim] <- exp(amak_std$value[which(amak_std$name=="log_Rzero")])/1000
+        amak_S0[om_sim] <- exp(amak_std$value[which(amak_std$name=="log_Rzero")])/1000*amak_output$phizero*1000
+      }
+
+      if (om_input$bias_cor_method=="mean_unbiased") {
         SRparms <- convertSRparms(R0=exp(amak_std$value[which(amak_std$name=="log_Rzero")]),
                                   h=ifelse(SRmodel==2, log(4*amak_output$Steep[2]/(1-amak_output$Steep[2])), amak_output$Steep[2]),
                                   phi=amak_output$phizero,
@@ -93,17 +110,7 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
                                   model=SRmodel)
         amak_R0[om_sim] <- SRparms$R0BC/1000
         amak_S0[om_sim] <- SRparms$S0BC
-      } else {
-          amak_msy[, om_sim] <- amak_std$value[which(amak_std$name=="MSY")]
-          amak_fmsy[, om_sim] <- round(amak_std$value[which(amak_std$name=="Fmsy")], digits = 3)
-          amak_ssbmsy[, om_sim] <- amak_std$value[which(amak_std$name=="Bmsy")]
-          amak_R0[om_sim] <- exp(amak_std$value[which(amak_std$name=="log_Rzero")])/1000
-          amak_S0[om_sim] <- amak_R0[om_sim]*amak_output$phizero*1000
       }
-
-      amak_fratio[, om_sim] <- amak_Ftot[, om_sim]/amak_fmsy[om_sim]
-      amak_ssbratio[, om_sim] <- amak_ssb[,om_sim]/amak_ssbmsy[om_sim]
-      amak_agecomp[[om_sim]] <- apply(amak_output$N[,2:ncol(amak_output$N)]/1000, 1, function(x) x/sum(x))
     }
       amak_list <- list(amak_biomass, amak_abundance, amak_ssb, amak_recruit, amak_Ftot, amak_landing, amak_survey, amak_msy, amak_fmsy, amak_ssbmsy, amak_fratio, amak_ssbratio, amak_agecomp, amak_R0, amak_S0)
       names(amak_list) <- c("biomass", "abundance", "ssb", "recruit", "Ftot", "landing", "survey", "msy", "fmsy", "ssbmsy", "fratio", "ssbratio", "agecomp", "R0", "S0")
@@ -154,26 +161,30 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
         asap_msy[, om_sim] <- asap_msy_adhoc$msy
         asap_fmsy[, om_sim] <- round(asap_msy_adhoc$Fmsy, digits = 3)
         asap_ssbmsy[, om_sim] <- asap_msy_adhoc$SSBmsy
+      } else {
+       asap_msy[, om_sim] <- asap_std$value[which(asap_std$name=="MSY")]
+       asap_fmsy[, om_sim] <- round(asap_std$value[which(asap_std$name=="Fmsy_report")], digits = 3)
+       asap_ssbmsy[, om_sim] <- asap_std$value[which(asap_std$name=="SSBmsy_report")]
+      }
 
+      asap_fratio[, om_sim] <- asap_Ftot[, om_sim]/asap_fmsy[om_sim]
+      asap_ssbratio[, om_sim] <- asap_ssb[,om_sim]/asap_ssbmsy[om_sim]
+      asap_agecomp[[om_sim]] <- apply(asap_output$N.age, 1, function(x) x/sum(x))
+      if (om_input$bias_cor_method=="median_unbiased") {
+        asap_R0[om_sim] <- asap_output$SR.parms$SR.R0
+        asap_S0[om_sim] <- asap_output$SR.parms$SR.S0
+      }
+
+      if (om_input$bias_cor_method=="mean_unbiased") {
         SRparms <- convertSRparms(R0=asap_output$SR.parms$SR.R0,
                                   h=asap_output$SR.parms$SR.steepness,
                                   phi=asap_output$SR.parms$SR.SPR0,
                                   sigmaR=sqrt(log(asap_output$control.parms$recruit.cv[1]^2+1)),
                                   mean2med=FALSE,
                                   model=SRmodel)
-        amak_R0[om_sim] <- SRparms$R0BC
-        amak_S0[om_sim] <- SRparms$S0BC
-      } else {
-       asap_msy[, om_sim] <- asap_std$value[which(asap_std$name=="MSY")]
-       asap_fmsy[, om_sim] <- round(asap_std$value[which(asap_std$name=="Fmsy_report")], digits = 3)
-       asap_ssbmsy[, om_sim] <- asap_std$value[which(asap_std$name=="SSBmsy_report")]
-       asap_R0[om_sim] <- asap_output$SR.parms$SR.R0
-       asap_S0[om_sim] <- asap_output$SR.parms$SR.S0
+        asap_R0[om_sim] <- SRparms$R0BC
+        asap_S0[om_sim] <- SRparms$S0BC
       }
-
-      asap_fratio[, om_sim] <- asap_Ftot[, om_sim]/asap_fmsy[om_sim]
-      asap_ssbratio[, om_sim] <- asap_ssb[,om_sim]/asap_ssbmsy[om_sim]
-      asap_agecomp[[om_sim]] <- apply(asap_output$N.age, 1, function(x) x/sum(x))
     }
     asap_list <- list(asap_biomass, asap_abundance, asap_ssb, asap_recruit, asap_Ftot, asap_landing, asap_survey, asap_msy, asap_fmsy, asap_ssbmsy, asap_fratio, asap_ssbratio, asap_agecomp, asap_R0, asap_S0)
     names(asap_list) <- c("biomass", "abundance", "ssb", "recruit", "Ftot", "landing", "survey", "msy", "fmsy", "ssbmsy", "fratio", "ssbratio", "agecomp", "R0", "S0")
