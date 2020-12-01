@@ -4,7 +4,9 @@ check_performance <- function (em_names, casedir=NULL){
                       "ssb", "recruit", "Ftot",
                       "landing", "survey",
                       "msy", "fmsy", "ssbmsy",
-                      "fratio", "ssbratio")
+                      "fratio", "ssbratio",
+                      "geomR0", "geomS0", "geomDf",
+                      "arimR0", "arimS0", "arimDf")
   comparison_id <- which(names(om_list) %in% comparison_var)
 
   em_list <- list()
