@@ -22,7 +22,7 @@ check_performance <- function (em_names, casedir=NULL){
     for(j in 1:length(comparison_id)){
       re <- as.data.frame(matrix(NA, ncol=length(em_names), nrow=length(om_list[[comparison_id[j]]][,k])))
       for (i in 1:length(em_names)){
-        re[,i] <- (em_list[[i]][[j]][,k] - om_list[[comparison_id[j]]][,k]) / om_list[[comparison_id[j]]][,k]
+        re[,i] <- (em_list[[i]][[comparison_id[j]]][,k] - om_list[[comparison_id[j]]][,k]) / om_list[[comparison_id[j]]][,k]
       }
       colnames(re) <- em_names
       re_var[[j]] <- re
@@ -39,7 +39,7 @@ check_performance <- function (em_names, casedir=NULL){
     for(j in 1:length(comparison_id)){
       are <- as.data.frame(matrix(NA, ncol=length(em_names), nrow=length(om_list[[comparison_id[j]]][,k])))
       for (i in 1:length(em_names)){
-        are[,i] <- (em_list[[i]][[j]][,k] - om_list[[comparison_id[j]]][,k]) / om_list[[comparison_id[j]]][,k]
+        are[,i] <- (em_list[[i]][[comparison_id[j]]][,k] - om_list[[comparison_id[j]]][,k]) / om_list[[comparison_id[j]]][,k]
       }
       colnames(are) <- em_names
       are_var[[j]] <- are
@@ -57,9 +57,9 @@ check_performance <- function (em_names, casedir=NULL){
       cc <- as.data.frame(NA, ncol=length(em_names), nrow=1)
       for (i in 1:length(em_names)){
         cc[,i] <- sum((om_list[[comparison_id[j]]][,k] - mean(om_list[[comparison_id[j]]][,k])) *
-          (em_list[[i]][[j]][,k] - mean(em_list[[i]][[j]][,k]))) /
+          (em_list[[i]][[comparison_id[j]]][,k] - mean(em_list[[i]][[comparison_id[j]]][,k]))) /
           sqrt(sum((om_list[[comparison_id[j]]][,k] - mean(om_list[[comparison_id[j]]][,k]))^2) *
-                 sum((em_list[[i]][[j]][,k] - mean(em_list[[i]][[j]][,k]))^2))
+                 sum((em_list[[i]][[comparison_id[j]]][,k] - mean(em_list[[i]][[comparison_id[j]]][,k]))^2))
       }
       colnames(cc) <- em_names
       cc_var[[j]] <- cc
