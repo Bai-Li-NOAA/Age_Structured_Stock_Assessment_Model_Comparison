@@ -19,7 +19,7 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
   om_landing_err <- om_survey_err <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
   om_geomR0 <- om_arimR0 <-
     om_geomS0 <- om_arimS0 <-
-    om_geomDf <- om_arimDf <- c()
+    om_geomDf <- om_arimDf <- matrix(NA, nrow=1, ncol=keep_sim_num)
 
   for (om_sim in 1:keep_sim_num){
 
@@ -41,12 +41,12 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
     om_agecomp[[om_sim]] <- apply(om_output$N.age/1000, 1, function(x) x/sum(x))
     #om_landing_err[,om_sim] <- em_input$L.obs$fleet1
     #om_survey_err[,om_sim] <- em_input$survey.obs$survey1
-    om_geomR0[om_sim] <- om_input$median_R0/1000
-    om_arimR0[om_sim] <- om_input$mean_R0/1000
-    om_geomS0[om_sim] <- om_input$median_R0*om_input$Phi.0
-    om_arimS0[om_sim] <- om_input$mean_R0*om_input$Phi.0
-    om_geomDf[om_sim] <- om_ssb[nrow(om_ssb),om_sim]/om_geomS0[om_sim]
-    om_arimDf[om_sim] <- om_ssb[nrow(om_ssb),om_sim]/om_arimS0[om_sim]
+    om_geomR0[,om_sim] <- om_input$median_R0/1000
+    om_arimR0[,om_sim] <- om_input$mean_R0/1000
+    om_geomS0[,om_sim] <- om_input$median_R0*om_input$Phi.0
+    om_arimS0[,om_sim] <- om_input$mean_R0*om_input$Phi.0
+    om_geomDf[,om_sim] <- om_ssb[nrow(om_ssb),om_sim]/om_geomS0[,om_sim]
+    om_arimDf[,om_sim] <- om_ssb[nrow(om_ssb),om_sim]/om_arimS0[,om_sim]
 
   }
 
@@ -88,7 +88,7 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
 
     amak_geomR0 <- amak_arimR0 <-
       amak_geomS0 <- amak_arimS0 <-
-      amak_geomDf <- amak_arimDf <- c()
+      amak_geomDf <- amak_arimDf <- matrix(NA, nrow=1, ncol=keep_sim_num)
 
     subdir = "AMAK"
     for (om_sim in 1:keep_sim_num){
@@ -137,9 +137,9 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
       amak_ssbratio[, om_sim] <- amak_ssb[,om_sim]/amak_ssbmsy[om_sim]
       amak_agecomp[[om_sim]] <- apply(amak_output$N[,2:ncol(amak_output$N)]/1000, 1, function(x) x/sum(x))
 
-      amak_geomR0[om_sim] <- exp(amak_std$value[which(amak_std$name=="log_Rzero")])/1000
-      amak_geomS0[om_sim] <- amak_geomR0[om_sim]*amak_output$phizero*1000
-      amak_geomDf[om_sim] <- amak_ssb[nrow(amak_ssb),om_sim]/amak_geomS0[om_sim]
+      amak_geomR0[, om_sim] <- exp(amak_std$value[which(amak_std$name=="log_Rzero")])/1000
+      amak_geomS0[, om_sim] <- amak_geomR0[, om_sim]*amak_output$phizero*1000
+      amak_geomDf[, om_sim] <- amak_ssb[nrow(amak_ssb),om_sim]/amak_geomS0[, om_sim]
 
       SRparms <- convertSRparms(R0=exp(amak_std$value[which(amak_std$name=="log_Rzero")]),
                                 h=ifelse(SRmodel==2, log(4*amak_output$Steep[2]/(1-amak_output$Steep[2])), amak_output$Steep[2]),
@@ -147,9 +147,9 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
                                 sigmaR=amak_output$sigmar,
                                 mean2med=FALSE,
                                 model=SRmodel)
-      amak_arimR0[om_sim] <- SRparms$R0BC/1000
-      amak_arimS0[om_sim] <- SRparms$S0BC
-      amak_arimDf[om_sim] <- amak_ssb[nrow(amak_ssb),om_sim]/amak_arimS0[om_sim]
+      amak_arimR0[, om_sim] <- SRparms$R0BC/1000
+      amak_arimS0[, om_sim] <- SRparms$S0BC
+      amak_arimDf[, om_sim] <- amak_ssb[nrow(amak_ssb),om_sim]/amak_arimS0[, om_sim]
     }
       amak_list <- list(amak_biomass, amak_abundance,
                         amak_ssb, amak_recruit, amak_Ftot,
@@ -188,7 +188,7 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
 
     asap_geomR0 <- asap_arimR0 <-
       asap_geomS0 <- asap_arimS0 <-
-      asap_geomDf <- asap_arimDf <- c()
+      asap_geomDf <- asap_arimDf <- matrix(NA, nrow=1, ncol=keep_sim_num)
 
     subdir = "ASAP"
 
@@ -237,9 +237,9 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
       asap_ssbratio[, om_sim] <- asap_ssb[,om_sim]/asap_ssbmsy[om_sim]
       asap_agecomp[[om_sim]] <- apply(asap_output$N.age, 1, function(x) x/sum(x))
 
-      asap_geomR0[om_sim] <- asap_output$SR.parms$SR.R0
-      asap_geomS0[om_sim] <- asap_output$SR.parms$SR.S0
-      asap_geomDf[om_sim] <- asap_ssb[nrow(asap_ssb),om_sim]/asap_geomS0[om_sim]
+      asap_geomR0[, om_sim] <- asap_output$SR.parms$SR.R0
+      asap_geomS0[, om_sim] <- asap_output$SR.parms$SR.S0
+      asap_geomDf[, om_sim] <- asap_ssb[nrow(asap_ssb),om_sim]/asap_geomS0[, om_sim]
 
       SRparms <- convertSRparms(R0=asap_output$SR.parms$SR.R0,
                                 h=asap_output$SR.parms$SR.steepness,
@@ -247,9 +247,9 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
                                 sigmaR=sqrt(log(asap_output$control.parms$recruit.cv[1]^2+1)),
                                 mean2med=FALSE,
                                 model=SRmodel)
-      asap_arimR0[om_sim] <- SRparms$R0BC
-      asap_arimS0[om_sim] <- SRparms$S0BC
-      asap_arimDf[om_sim] <- asap_ssb[nrow(asap_ssb),om_sim]/asap_arimS0[om_sim]
+      asap_arimR0[, om_sim] <- SRparms$R0BC
+      asap_arimS0[, om_sim] <- SRparms$S0BC
+      asap_arimDf[, om_sim] <- asap_ssb[nrow(asap_ssb),om_sim]/asap_arimS0[, om_sim]
 
     }
 
@@ -291,7 +291,7 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
 
     bam_geomR0 <- bam_arimR0 <-
       bam_geomS0 <- bam_arimS0 <-
-      bam_geomDf <- bam_arimDf <- c()
+      bam_geomDf <- bam_arimDf <- matrix(NA, nrow=1, ncol=keep_sim_num)
 
     subdir = "BAM"
 
@@ -313,12 +313,12 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
       bam_fratio[, om_sim] <- bam_output$t.series$F.Fmsy[1:om_input$year[length(om_input$year)]]
       bam_ssbratio[, om_sim] <- bam_output$t.series$SSB.SSBmsy[1:om_input$year[length(om_input$year)]]
       bam_agecomp[[om_sim]] <- apply(bam_output$N.age[1:om_input$nyr,]/1000, 1, function(x) x/sum(x))
-      bam_geomR0[om_sim] <- bam_output$parms$R0/1000
-      bam_arimR0[om_sim] <- bam_output$parms$R.virgin.bc/1000
-      bam_geomS0[om_sim] <- bam_output$parms$SSB0
-      bam_arimS0[om_sim] <- bam_output$parms$R.virgin.bc*bam_output$parms[[grep("Phi0", names(bam_output$parms), value=TRUE)]]
-      bam_geomDf[om_sim] <- bam_ssb[nrow(bam_ssb),om_sim]/bam_geomS0[om_sim]
-      bam_arimDf[om_sim] <- bam_ssb[nrow(bam_ssb),om_sim]/bam_arimS0[om_sim]
+      bam_geomR0[, om_sim] <- bam_output$parms$R0/1000
+      bam_arimR0[, om_sim] <- bam_output$parms$R.virgin.bc/1000
+      bam_geomS0[, om_sim] <- bam_output$parms$SSB0
+      bam_arimS0[, om_sim] <- bam_output$parms$R.virgin.bc*bam_output$parms[[grep("Phi0", names(bam_output$parms), value=TRUE)]]
+      bam_geomDf[, om_sim] <- bam_ssb[nrow(bam_ssb),om_sim]/bam_geomS0[, om_sim]
+      bam_arimDf[, om_sim] <- bam_ssb[nrow(bam_ssb),om_sim]/bam_arimS0[, om_sim]
 
     }
 
@@ -360,7 +360,7 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
 
     ss_geomR0 <- ss_arimR0 <-
       ss_geomS0 <- ss_arimS0 <-
-      ss_geomDf <- ss_arimDf <- c()
+      ss_geomDf <- ss_arimDf <- matrix(NA, nrow=1, ncol=keep_sim_num)
 
     subdir = "SS"
     for (om_sim in 1:keep_sim_num){
@@ -385,14 +385,14 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
       ss_ssbratio[, om_sim] <- ss_output$Kobe$B.Bmsy[which(ss_output$Kobe$Yr>=om_input$year[1] & ss_output$Kobe$Yr<=om_input$year[length(om_input$year)])]
       ss_agecomp[[om_sim]] <- apply(ss_output$natage_annual_2_with_fishery[1:om_input$nyr, 5:ncol(ss_output$natage_annual_2_with_fishery)], 1, function(x) x/sum(x))
 
-      ss_arimR0[om_sim] <- ss_output$timeseries$Recruit_0[which(ss_output$timeseries$Era=="INIT")]
-      ss_arimS0[om_sim] <- ss_output$timeseries$SpawnBio[which(ss_output$timeseries$Era=="INIT")]
-      ss_arimDf[om_sim] <- ss_ssb[nrow(ss_ssb),om_sim]/ss_arimS0[om_sim]
+      ss_arimR0[, om_sim] <- ss_output$timeseries$Recruit_0[which(ss_output$timeseries$Era=="INIT")]
+      ss_arimS0[, om_sim] <- ss_output$timeseries$SpawnBio[which(ss_output$timeseries$Era=="INIT")]
+      ss_arimDf[, om_sim] <- ss_ssb[nrow(ss_ssb),om_sim]/ss_arimS0[, om_sim]
 
       if(SRmodel==1){
         SRparms <- convertSRparms(R0=ss_output$timeseries$Recruit_0[which(ss_output$timeseries$Era=="INIT")],
                                   h=ss_output$parameters$Value[ss_output$parameters$Label=="SR_BH_steep"],
-                                  phi=ss_arimS0[om_sim]/ss_arimR0[om_sim],
+                                  phi=ss_arimS0[, om_sim]/ss_arimR0[, om_sim],
                                   sigmaR=ss_output$sigma_R_in,
                                   mean2med=TRUE,
                                   model=SRmodel)
@@ -401,15 +401,15 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
       if(SRmodel==2){
         SRparms <- convertSRparms(R0=ss_output$timeseries$Recruit_0[which(ss_output$timeseries$Era=="INIT")],
                                   h=ss_output$parameters$Value[ss_output$parameters$Label=="SR_Ricker_beta"],
-                                  phi=ss_arimS0[om_sim]/ss_arimR0[om_sim],
+                                  phi=ss_arimS0[, om_sim]/ss_arimR0[, om_sim],
                                   sigmaR=ss_output$sigma_R_in,
                                   mean2med=TRUE,
                                   model=SRmodel)
       }
 
-      ss_geomR0[om_sim] <- SRparms$R0BC
-      ss_geomS0[om_sim] <- SRparms$S0BC
-      ss_geomDf[om_sim] <- ss_ssb[nrow(ss_ssb),om_sim]/ss_geomS0[om_sim]
+      ss_geomR0[, om_sim] <- SRparms$R0BC
+      ss_geomS0[, om_sim] <- SRparms$S0BC
+      ss_geomDf[, om_sim] <- ss_ssb[nrow(ss_ssb),om_sim]/ss_geomS0[, om_sim]
 
     }
     ss_list <- list(ss_biomass, ss_abundance,
