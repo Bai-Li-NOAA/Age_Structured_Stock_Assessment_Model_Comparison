@@ -139,7 +139,7 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
 
       amak_geomR0[om_sim] <- exp(amak_std$value[which(amak_std$name=="log_Rzero")])/1000
       amak_geomS0[om_sim] <- amak_geomR0[om_sim]*amak_output$phizero*1000
-      amak_geimDf[om_sim] <- amak_ssb[nrow(amak_ssb),om_sim]/amak_geomS0[om_sim]
+      amak_geomDf[om_sim] <- amak_ssb[nrow(amak_ssb),om_sim]/amak_geomS0[om_sim]
 
       SRparms <- convertSRparms(R0=exp(amak_std$value[which(amak_std$name=="log_Rzero")]),
                                 h=ifelse(SRmodel==2, log(4*amak_output$Steep[2]/(1-amak_output$Steep[2])), amak_output$Steep[2]),
