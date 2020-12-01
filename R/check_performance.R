@@ -1,6 +1,10 @@
 #' @export
 check_performance <- function (em_names, casedir=NULL){
-  comparison_var <- c("biomass", "abundance", "ssb", "recruit", "Ftot", "landing", "survey", "msy", "fmsy", "ssbmsy", "fratio", "ssbratio")
+  comparison_var <- c("biomass", "abundance",
+                      "ssb", "recruit", "Ftot",
+                      "landing", "survey",
+                      "msy", "fmsy", "ssbmsy",
+                      "fratio", "ssbratio")
   comparison_id <- which(names(om_list) %in% comparison_var)
 
   em_list <- list()
