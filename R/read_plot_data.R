@@ -6,15 +6,25 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
   ## OM
   subdir = "OM"
   load(file.path(casedir, "output", subdir, paste("OM", 1, ".RData", sep="")))
-  om_biomass <- om_abundance <- om_ssb <- om_recruit <- om_Ftot <- om_Fmul <- om_landing <- om_survey <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
+
+  om_biomass <- om_abundance <-
+    om_ssb <- om_recruit <- om_Ftot <- om_Fmul <-
+    om_landing <- om_survey <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
+
   om_msy <- om_fmsy <- om_ssbmsy <- matrix(NA, nrow=1, ncol=keep_sim_num)
+
   om_fratio <- om_ssbratio <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
   om_agecomp <- list()
+
   om_landing_err <- om_survey_err <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
-  om_geomR0 <- om_arimR0 <- om_geomS0 <- om_arimS0 <- c()
+  om_geomR0 <- om_arimR0 <-
+    om_geomS0 <- om_arimS0 <-
+    om_geomDf <- om_arimDf <- c()
 
   for (om_sim in 1:keep_sim_num){
+
     load(file.path(casedir, "output", subdir, paste("OM", keep_sim_id[om_sim], ".RData", sep="")))
+
     om_biomass[,om_sim] <- om_output$biomass.mt
     om_abundance[,om_sim] <- om_output$abundance/1000
     om_ssb[,om_sim] <- om_output$SSB
@@ -35,22 +45,54 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
     om_arimR0[om_sim] <- om_input$mean_R0/1000
     om_geomS0[om_sim] <- om_input$median_R0*om_input$Phi.0
     om_arimS0[om_sim] <- om_input$mean_R0*om_input$Phi.0
+    om_geomDf[om_sim] <- om_ssb[nrow(om_ssb),om_sim]/om_geomS0[om_sim]
+    om_arimDf[om_sim] <- om_ssb[nrow(om_ssb),om_sim]/om_arimS0[om_sim]
+
   }
-  om_list <- list(om_biomass, om_abundance, om_ssb, om_recruit, om_Ftot, om_landing, om_survey, om_msy, om_fmsy, om_ssbmsy, om_fratio, om_ssbratio, om_agecomp, om_geomR0, om_arimR0, om_geomS0, om_arimS0)
-  names(om_list) <- c("biomass", "abundance", "ssb", "recruit", "Ftot", "landing", "survey", "msy", "fmsy", "ssbmsy", "fratio", "ssbratio", "agecomp", "geomR0", "arimR0", "geomS0", "arimS0")
+
+  om_list <- list(om_biomass, om_abundance,
+                  om_ssb, om_recruit, om_Ftot,
+                  om_landing, om_survey,
+                  om_msy, om_fmsy, om_ssbmsy,
+                  om_fratio, om_ssbratio,
+                  om_agecomp,
+                  om_geomR0, om_arimR0,
+                  om_geomS0, om_arimS0,
+                  om_geomDf, om_arimDf)
+
+  names(om_list) <- c("biomass", "abundance",
+                      "ssb", "recruit", "Ftot",
+                      "landing", "survey",
+                      "msy", "fmsy", "ssbmsy",
+                      "fratio", "ssbratio",
+                      "agecomp",
+                      "geomR0", "arimR0",
+                      "geomS0", "arimS0",
+                      "geomDf", "arimDf")
+
   om_list <<- om_list
   save(om_list, file=file.path(casedir, "output", "om_output.RData"))
 
   ## AMAK
   if ("AMAK" %in% em_names){
-    amak_biomass <- amak_abundance <- amak_ssb <- amak_recruit <- amak_Ftot <- amak_Fmul <- amak_landing <- amak_survey <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
+
+    amak_biomass <- amak_abundance <-
+      amak_ssb <- amak_recruit <- amak_Ftot <- amak_Fmul <-
+      amak_landing <- amak_survey <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
+
     amak_msy <- amak_fmsy <- amak_ssbmsy <- matrix(NA, nrow=1, ncol=keep_sim_num)
+
     amak_fratio <- amak_ssbratio <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
+
     amak_agecomp <- list()
-    amak_R0 <- amak_S0 <- c()
+
+    amak_R0 <- amak_R0bc <-
+      amak_S0 <- amak_S0bc <-
+      amak_Df <- amak_Dfbc <- c()
 
     subdir = "AMAK"
     for (om_sim in 1:keep_sim_num){
+
       setwd(file.path(casedir, "output", subdir, paste("s", keep_sim_id[om_sim], sep="")))
       amak_output <- readRep("For_R", suffix = ".rep")
       amak_std <- readRep("amak", suffix = ".std")
@@ -91,43 +133,67 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
           amak_ssbmsy[, om_sim] <- amak_std$value[which(amak_std$name=="Bmsy")]
       }
 
-
       amak_fratio[, om_sim] <- amak_Ftot[, om_sim]/amak_fmsy[om_sim]
       amak_ssbratio[, om_sim] <- amak_ssb[,om_sim]/amak_ssbmsy[om_sim]
       amak_agecomp[[om_sim]] <- apply(amak_output$N[,2:ncol(amak_output$N)]/1000, 1, function(x) x/sum(x))
 
-      if (om_input$bias_cor_method=="median_unbiased") {
-        amak_R0[om_sim] <- exp(amak_std$value[which(amak_std$name=="log_Rzero")])/1000
-        amak_S0[om_sim] <- exp(amak_std$value[which(amak_std$name=="log_Rzero")])/1000*amak_output$phizero*1000
-      }
+      amak_R0[om_sim] <- exp(amak_std$value[which(amak_std$name=="log_Rzero")])/1000
+      amak_S0[om_sim] <- amak_R0[om_sim]*amak_output$phizero*1000
+      amak_Df[om_sim] <- amak_ssb[nrow(amak_ssb),om_sim]/amak_S0[om_sim]
 
-      if (om_input$bias_cor_method=="mean_unbiased") {
-        SRparms <- convertSRparms(R0=exp(amak_std$value[which(amak_std$name=="log_Rzero")]),
-                                  h=ifelse(SRmodel==2, log(4*amak_output$Steep[2]/(1-amak_output$Steep[2])), amak_output$Steep[2]),
-                                  phi=amak_output$phizero,
-                                  sigmaR=amak_output$sigmar,
-                                  mean2med=FALSE,
-                                  model=SRmodel)
-        amak_R0[om_sim] <- SRparms$R0BC/1000
-        amak_S0[om_sim] <- SRparms$S0BC
-      }
+      SRparms <- convertSRparms(R0=exp(amak_std$value[which(amak_std$name=="log_Rzero")]),
+                                h=ifelse(SRmodel==2, log(4*amak_output$Steep[2]/(1-amak_output$Steep[2])), amak_output$Steep[2]),
+                                phi=amak_output$phizero,
+                                sigmaR=amak_output$sigmar,
+                                mean2med=FALSE,
+                                model=SRmodel)
+      amak_R0bc[om_sim] <- SRparms$R0BC/1000
+      amak_S0bc[om_sim] <- SRparms$S0BC
+      amak_Dfbc[om_sim] <- amak_ssb[nrow(amak_ssb),om_sim]/amak_S0bc[om_sim]
     }
-      amak_list <- list(amak_biomass, amak_abundance, amak_ssb, amak_recruit, amak_Ftot, amak_landing, amak_survey, amak_msy, amak_fmsy, amak_ssbmsy, amak_fratio, amak_ssbratio, amak_agecomp, amak_R0, amak_S0)
-      names(amak_list) <- c("biomass", "abundance", "ssb", "recruit", "Ftot", "landing", "survey", "msy", "fmsy", "ssbmsy", "fratio", "ssbratio", "agecomp", "R0", "S0")
+      amak_list <- list(amak_biomass, amak_abundance,
+                        amak_ssb, amak_recruit, amak_Ftot,
+                        amak_landing, amak_survey,
+                        amak_msy, amak_fmsy, amak_ssbmsy,
+                        amak_fratio, amak_ssbratio,
+                        amak_agecomp,
+                        amak_R0, amak_R0bc,
+                        amak_S0, amak_S0bc,
+                        amak_Df, amak_Dfbc)
+      names(amak_list) <- c("biomass", "abundance",
+                            "ssb", "recruit", "Ftot",
+                            "landing", "survey",
+                            "msy", "fmsy", "ssbmsy",
+                            "fratio", "ssbratio",
+                            "agecomp",
+                            "R0", "R0bc",
+                            "S0", "S0bc",
+                            "Df", "Dfbc")
       amak_list <<- amak_list
       save(amak_list, file=file.path(casedir, "output", "amak_output.RData"))
   }
 
   ## ASAP
   if ("ASAP" %in% em_names){
-    asap_biomass <- asap_abundance <- asap_ssb <- asap_recruit <- asap_Ftot <- asap_Fmul <- asap_landing <- asap_survey <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
+
+    asap_biomass <- asap_abundance <-
+      asap_ssb <- asap_recruit <- asap_Ftot <- asap_Fmul <-
+      asap_landing <- asap_survey <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
+
     asap_msy <- asap_fmsy <- asap_ssbmsy <- matrix(NA, nrow=1, ncol=keep_sim_num)
+
     asap_fratio <- asap_ssbratio <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
+
     asap_agecomp <- list()
-    asap_R0 <- asap_S0 <- c()
+
+    asap_R0 <- asap_R0bc <-
+      asap_S0 <- asap_S0bc <-
+      asap_Df <- asap_Dfbc <- c()
 
     subdir = "ASAP"
+
     for (om_sim in 1:keep_sim_num){
+
       asap_output <- dget(file.path(casedir, "output", subdir, paste("s", keep_sim_id[om_sim], sep=""), "asap3.rdat"))
       setwd(file.path(casedir, "output", subdir, paste("s", keep_sim_id[om_sim], sep="")))
       asap_std <- readRep("asap3", suffix = ".std")
@@ -170,38 +236,67 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
       asap_fratio[, om_sim] <- asap_Ftot[, om_sim]/asap_fmsy[om_sim]
       asap_ssbratio[, om_sim] <- asap_ssb[,om_sim]/asap_ssbmsy[om_sim]
       asap_agecomp[[om_sim]] <- apply(asap_output$N.age, 1, function(x) x/sum(x))
-      if (om_input$bias_cor_method=="median_unbiased") {
-        asap_R0[om_sim] <- asap_output$SR.parms$SR.R0
-        asap_S0[om_sim] <- asap_output$SR.parms$SR.S0
-      }
 
-      if (om_input$bias_cor_method=="mean_unbiased") {
-        SRparms <- convertSRparms(R0=asap_output$SR.parms$SR.R0,
-                                  h=asap_output$SR.parms$SR.steepness,
-                                  phi=asap_output$SR.parms$SR.SPR0,
-                                  sigmaR=sqrt(log(asap_output$control.parms$recruit.cv[1]^2+1)),
-                                  mean2med=FALSE,
-                                  model=SRmodel)
-        asap_R0[om_sim] <- SRparms$R0BC
-        asap_S0[om_sim] <- SRparms$S0BC
-      }
+      asap_R0[om_sim] <- asap_output$SR.parms$SR.R0
+      asap_S0[om_sim] <- asap_output$SR.parms$SR.S0
+      asap_Df[om_sim] <- asap_ssb[nrow(asap_ssb),om_sim]/asap_S0[om_sim]
+
+      SRparms <- convertSRparms(R0=asap_output$SR.parms$SR.R0,
+                                h=asap_output$SR.parms$SR.steepness,
+                                phi=asap_output$SR.parms$SR.SPR0,
+                                sigmaR=sqrt(log(asap_output$control.parms$recruit.cv[1]^2+1)),
+                                mean2med=FALSE,
+                                model=SRmodel)
+      asap_R0bc[om_sim] <- SRparms$R0BC
+      asap_S0bc[om_sim] <- SRparms$S0BC
+      asap_Dfbc[om_sim] <- asap_ssb[nrow(asap_ssb),om_sim]/asap_S0bc[om_sim]
+
     }
-    asap_list <- list(asap_biomass, asap_abundance, asap_ssb, asap_recruit, asap_Ftot, asap_landing, asap_survey, asap_msy, asap_fmsy, asap_ssbmsy, asap_fratio, asap_ssbratio, asap_agecomp, asap_R0, asap_S0)
-    names(asap_list) <- c("biomass", "abundance", "ssb", "recruit", "Ftot", "landing", "survey", "msy", "fmsy", "ssbmsy", "fratio", "ssbratio", "agecomp", "R0", "S0")
+
+    asap_list <- list(asap_biomass, asap_abundance,
+                      asap_ssb, asap_recruit, asap_Ftot,
+                      asap_landing, asap_survey,
+                      asap_msy, asap_fmsy, asap_ssbmsy,
+                      asap_fratio, asap_ssbratio,
+                      asap_agecomp,
+                      asap_R0, asap_R0bc,
+                      asap_S0, asap_S0bc,
+                      asap_Df, asap_Dfbc)
+
+    names(asap_list) <- c("biomass", "abundance",
+                          "ssb", "recruit", "Ftot",
+                          "landing", "survey",
+                          "msy", "fmsy", "ssbmsy",
+                          "fratio", "ssbratio",
+                          "agecomp",
+                          "R0", "R0bc",
+                          "S0", "S0bc",
+                          "Df", "Dfbc")
+
     asap_list <<- asap_list
     save(asap_list, file=file.path(casedir, "output", "asap_output.RData"))
   }
 
   ## BAM
   if("BAM" %in% em_names){
-    bam_biomass <- bam_abundance <- bam_ssb <- bam_recruit <- bam_Ftot <- bam_Fmul <- bam_landing <- bam_survey <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
+    bam_biomass <- bam_abundance <-
+      bam_ssb <- bam_recruit <- bam_Ftot <- bam_Fmul <-
+      bam_landing <- bam_survey <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
+
     bam_msy <- bam_fmsy <- bam_ssbmsy <- matrix(NA, nrow=1, ncol=keep_sim_num)
+
     bam_fratio <- bam_ssbratio <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
+
     bam_agecomp <- list()
-    bam_R0 <- bam_R0bc <- bam_S0 <- bam_S0bc <- c()
+
+    bam_R0 <- bam_R0bc <-
+      bam_S0 <- bam_S0bc <-
+      bam_Df <- bam_Dfbc <- c()
 
     subdir = "BAM"
+
     for (om_sim in 1:keep_sim_num){
+
       bam_output <- dget(file.path(casedir, "output", subdir, paste("s", keep_sim_id[om_sim], sep=""), "bam-sim.rdat"))
 
       bam_biomass[,om_sim] <- bam_output$t.series$B[1:om_input$year[length(om_input$year)]]
@@ -222,9 +317,30 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
       bam_R0bc[om_sim] <- bam_output$parms$R.virgin.bc/1000
       bam_S0[om_sim] <- bam_output$parms$SSB0
       bam_S0bc[om_sim] <- bam_output$parms$R.virgin.bc*bam_output$parms[[grep("Phi0", names(bam_output$parms), value=TRUE)]]
+      bam_Df[om_sim] <- bam_ssb[nrow(bam_ssb),om_sim]/bam_S0[om_sim]
+      bam_Dfbc[om_sim] <- bam_ssb[nrow(bam_ssb),om_sim]/bam_S0bc[om_sim]
+
     }
-    bam_list <- list(bam_biomass, bam_abundance, bam_ssb, bam_recruit, bam_Ftot, bam_landing, bam_survey, bam_msy, bam_fmsy, bam_ssbmsy, bam_fratio, bam_ssbratio, bam_agecomp, bam_R0, bam_R0bc, bam_S0, bam_S0bc)
-    names(bam_list) <- c("biomass", "abundance", "ssb", "recruit", "Ftot", "landing", "survey", "msy", "fmsy", "ssbmsy", "fratio", "ssbratio", "agecomp", "R0", "R0bc", "S0", "S0bc")
+
+    bam_list <- list(bam_biomass, bam_abundance,
+                     bam_ssb, bam_recruit, bam_Ftot,
+                     bam_landing, bam_survey,
+                     bam_msy, bam_fmsy, bam_ssbmsy,
+                     bam_fratio, bam_ssbratio,
+                     bam_agecomp,
+                     bam_R0, bam_R0bc,
+                     bam_S0, bam_S0bc,
+                     bam_Df, bam_Dfbc)
+
+    names(bam_list) <- c("biomass", "abundance",
+                         "ssb", "recruit", "Ftot",
+                         "landing", "survey",
+                         "msy", "fmsy", "ssbmsy",
+                         "fratio", "ssbratio",
+                         "agecomp",
+                         "R0", "R0bc",
+                         "S0", "S0bc",
+                         "Df", "Dfbc")
     bam_list <<- bam_list
     save(bam_list, file=file.path(casedir, "output", "bam_output.RData"))
   }
@@ -232,11 +348,19 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
   ## SS
   if ("SS" %in% em_names){
     library(r4ss)
-    ss_biomass <- ss_abundance <- ss_ssb <- ss_recruit <- ss_Ftot <- ss_Fmul <- ss_landing <- ss_survey <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
+    ss_biomass <- ss_abundance <-
+      ss_ssb <- ss_recruit <- ss_Ftot <- ss_Fmul <-
+      ss_landing <- ss_survey <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
+
     ss_msy <- ss_fmsy <- ss_ssbmsy <- matrix(NA, nrow=1, ncol=keep_sim_num)
+
     ss_fratio <- ss_ssbratio <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
+
     ss_agecomp <- list()
-    ss_R0 <- ss_S0 <-c()
+
+    ss_R0 <- ss_R0bc <-
+      ss_S0 <- ss_S0bc <-
+      ss_Df <- ss_Dfbc <- c()
 
     subdir = "SS"
     for (om_sim in 1:keep_sim_num){
@@ -263,9 +387,32 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
 
       ss_R0[om_sim] <- ss_output$timeseries$Recruit_0[which(ss_output$timeseries$Era=="INIT")]
       ss_S0[om_sim] <- ss_output$timeseries$SpawnBio[which(ss_output$timeseries$Era=="INIT")]
+      ss_Df[om_sim] <- ss_ssb[nrow(ss_ssb),om_sim]/ss_S0[om_sim]
+
+      ss_R0bc[om_sim] <- ss_output$timeseries$Recruit_0[which(ss_output$timeseries$Era=="INIT")]
+      ss_S0bc[om_sim] <- ss_output$timeseries$SpawnBio[which(ss_output$timeseries$Era=="INIT")]
+      ss_Dfbc[om_sim] <- ss_ssb[nrow(ss_ssb),om_sim]/ss_S0bc[om_sim]
+
     }
-    ss_list <- list(ss_biomass, ss_abundance, ss_ssb, ss_recruit, ss_Ftot, ss_landing, ss_survey, ss_msy, ss_fmsy, ss_ssbmsy, ss_fratio, ss_ssbratio, ss_agecomp, ss_R0, ss_S0)
-    names(ss_list) <- c("biomass", "abundance", "ssb", "recruit", "Ftot", "landing", "survey", "msy", "fmsy", "ssbmsy", "fratio", "ssbratio", "agecomp", "R0", "S0")
+    ss_list <- list(ss_biomass, ss_abundance,
+                    ss_ssb, ss_recruit, ss_Ftot,
+                    ss_landing, ss_survey,
+                    ss_msy, ss_fmsy, ss_ssbmsy,
+                    ss_fratio, ss_ssbratio,
+                    ss_agecomp,
+                    ss_R0, ss_R0bc,
+                    ss_S0, ss_S0bc,
+                    ss_Df, ss_Dfbc)
+
+    names(ss_list) <- c("biomass", "abundance",
+                        "ssb", "recruit", "Ftot",
+                        "landing", "survey",
+                        "msy", "fmsy", "ssbmsy",
+                        "fratio", "ssbratio",
+                        "agecomp",
+                        "R0", "R0bc",
+                        "S0", "S0bc",
+                        "Df", "Dfbc")
     ss_list <<- ss_list
     save(ss_list, file=file.path(casedir, "output", "ss_output.RData"))
   }
