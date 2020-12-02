@@ -55,20 +55,20 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
                   om_landing, om_survey,
                   om_msy, om_fmsy, om_ssbmsy,
                   om_fratio, om_ssbratio,
-                  om_agecomp,
                   om_geomR0, om_arimR0,
                   om_geomS0, om_arimS0,
-                  om_geomDf, om_arimDf)
+                  om_geomDf, om_arimDf,
+                  om_agecomp)
 
   names(om_list) <- c("biomass", "abundance",
                       "ssb", "recruit", "Ftot",
                       "landing", "survey",
                       "msy", "fmsy", "ssbmsy",
                       "fratio", "ssbratio",
-                      "agecomp",
                       "geomR0", "arimR0",
                       "geomS0", "arimS0",
-                      "geomDf", "arimDf")
+                      "geomDf", "arimDf",
+                      "agecomp")
 
   om_list <<- om_list
   save(om_list, file=file.path(casedir, "output", "om_output.RData"))
@@ -156,19 +156,19 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
                         amak_landing, amak_survey,
                         amak_msy, amak_fmsy, amak_ssbmsy,
                         amak_fratio, amak_ssbratio,
-                        amak_agecomp,
                         amak_geomR0, amak_arimR0,
                         amak_geomS0, amak_arimS0,
-                        amak_geomDf, amak_arimDf)
+                        amak_geomDf, amak_arimDf,
+                        amak_agecomp)
       names(amak_list) <- c("biomass", "abundance",
                             "ssb", "recruit", "Ftot",
                             "landing", "survey",
                             "msy", "fmsy", "ssbmsy",
                             "fratio", "ssbratio",
-                            "agecomp",
                             "geomR0", "arimR0",
                             "geomS0", "arimS0",
-                            "geomDf", "arimDf")
+                            "geomDf", "arimDf",
+                            "agecomp")
       amak_list <<- amak_list
       save(amak_list, file=file.path(casedir, "output", "amak_output.RData"))
   }
@@ -258,20 +258,20 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
                       asap_landing, asap_survey,
                       asap_msy, asap_fmsy, asap_ssbmsy,
                       asap_fratio, asap_ssbratio,
-                      asap_agecomp,
                       asap_geomR0, asap_arimR0,
                       asap_geomS0, asap_arimS0,
-                      asap_geomDf, asap_arimDf)
+                      asap_geomDf, asap_arimDf,
+                      asap_agecomp)
 
     names(asap_list) <- c("biomass", "abundance",
                           "ssb", "recruit", "Ftot",
                           "landing", "survey",
                           "msy", "fmsy", "ssbmsy",
                           "fratio", "ssbratio",
-                          "agecomp",
                           "geomR0", "arimR0",
                           "geomS0", "arimS0",
-                          "geomDf", "arimDf")
+                          "geomDf", "arimDf",
+                          "agecomp")
 
     asap_list <<- asap_list
     save(asap_list, file=file.path(casedir, "output", "asap_output.RData"))
@@ -327,20 +327,20 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
                      bam_landing, bam_survey,
                      bam_msy, bam_fmsy, bam_ssbmsy,
                      bam_fratio, bam_ssbratio,
-                     bam_agecomp,
                      bam_geomR0, bam_arimR0,
                      bam_geomS0, bam_arimS0,
-                     bam_geomDf, bam_arimDf)
+                     bam_geomDf, bam_arimDf,
+                     bam_agecomp)
 
     names(bam_list) <- c("biomass", "abundance",
                          "ssb", "recruit", "Ftot",
                          "landing", "survey",
                          "msy", "fmsy", "ssbmsy",
                          "fratio", "ssbratio",
-                         "agecomp",
                          "geomR0", "arimR0",
                          "geomS0", "arimS0",
-                         "geomDf", "arimDf")
+                         "geomDf", "arimDf",
+                         "agecomp")
     bam_list <<- bam_list
     save(bam_list, file=file.path(casedir, "output", "bam_output.RData"))
   }
@@ -417,20 +417,20 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
                     ss_landing, ss_survey,
                     ss_msy, ss_fmsy, ss_ssbmsy,
                     ss_fratio, ss_ssbratio,
-                    ss_agecomp,
                     ss_geomR0, ss_arimR0,
                     ss_geomS0, ss_arimS0,
-                    ss_geomDf, ss_arimDf)
+                    ss_geomDf, ss_arimDf,
+                    ss_agecomp)
 
     names(ss_list) <- c("biomass", "abundance",
                         "ssb", "recruit", "Ftot",
                         "landing", "survey",
                         "msy", "fmsy", "ssbmsy",
                         "fratio", "ssbratio",
-                        "agecomp",
                         "geomR0", "arimR0",
                         "geomS0", "arimS0",
-                        "geomDf", "arimDf")
+                        "geomDf", "arimDf",
+                        "agecomp")
     ss_list <<- ss_list
     save(ss_list, file=file.path(casedir, "output", "ss_output.RData"))
   }
