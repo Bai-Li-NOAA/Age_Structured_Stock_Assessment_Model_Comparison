@@ -60,7 +60,8 @@ run_asap <- function(maindir=NULL, subdir="ASAP", om_sim_num=NULL, casedir=cased
                                                list.files(path = getwd(), pattern = c(".par")),
                                                list.files(path = getwd(), pattern = c(".std")),
                                                list.files(path = getwd(), pattern = c(".rdat")),
-                                               list.files(path = getwd(), pattern = c(".cov"))))]))
+                                               list.files(path = getwd(), pattern = c(".cov")),
+                                               list.files(path = getwd(), pattern = c(".DAT")),))]))
   }
   #stopCluster(cl)
 

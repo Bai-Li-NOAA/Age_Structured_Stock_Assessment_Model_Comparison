@@ -74,7 +74,8 @@ run_amak <- function(maindir=NULL, subdir="AMAK", om_sim_num=NULL, casedir=cased
                                                list.files(path = getwd(), pattern = c(".par")),
                                                list.files(path = getwd(), pattern = c(".std")),
                                                list.files(path = getwd(), pattern = c(".rdat")),
-                                               list.files(path = getwd(), pattern = c(".cov"))))]))
+                                               list.files(path = getwd(), pattern = c(".cov")),
+                                               list.files(path = getwd(), pattern = c(".dat")),))]))
   }
   #stopCluster(cl)
 
