@@ -4,7 +4,8 @@ run_amak <- function(maindir=NULL, subdir="AMAK", om_sim_num=NULL, casedir=cased
   unlink(list.files(file.path(casedir, "output", "AMAK"), full.names = TRUE), recursive = TRUE)
   sapply(1:om_sim_num, function(x) dir.create(file.path(casedir, "output", subdir, paste("s", x, sep=""))))
 
-  file.copy(file.path(maindir, "em_input", input_filename), file.path(maindir, "em_input", "amak.dat"), overwrite = T)
+  file.copy(file.path(maindir, "em_input", paste("amak_", input_filename, ".dat", sep="")), file.path(maindir, "em_input", "amak.dat"), overwrite = T)
+  file.copy(file.path(maindir, "em_input", paste("amak_data_", input_filename, ".dat", sep="")), file.path(maindir, "em_input", "amak_data.dat"), overwrite = T)
 
   ctlf <- file.path(maindir, "em_input", "amak.dat")
   datf <- file.path(maindir, "em_input", "amak_data.dat")
@@ -61,7 +62,7 @@ run_amak <- function(maindir=NULL, subdir="AMAK", om_sim_num=NULL, casedir=cased
     }
   }
 
-  cl <- detectCores()-2
+  cl <- ifelse(detectCores()==1, detectCores(), detectCores()-2)
   registerDoParallel(cl)
 
   foreach (om_sim = 1:om_sim_num) %dopar% {
@@ -75,7 +76,7 @@ run_amak <- function(maindir=NULL, subdir="AMAK", om_sim_num=NULL, casedir=cased
                                                list.files(path = getwd(), pattern = c(".std")),
                                                list.files(path = getwd(), pattern = c(".rdat")),
                                                list.files(path = getwd(), pattern = c(".cov")),
-                                               list.files(path = getwd(), pattern = c(".dat")),))]))
+                                               list.files(path = getwd(), pattern = c(".dat"))))]))
   }
   #stopCluster(cl)
 

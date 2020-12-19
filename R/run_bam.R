@@ -7,7 +7,7 @@ run_bam <- function(maindir=maindir, subdir="BAM", om_sim_num=NULL, casedir=case
   unlink(list.files(file.path(casedir, "output", "BAM"), full.names = TRUE), recursive = TRUE)
   sapply(1:om_sim_num, function(x) dir.create(file.path(casedir, "output", subdir, paste("s", x, sep=""))))
 
-  file.copy(file.path(maindir, "em_input", input_filename), file.path(maindir, "em_input", "BAM.DatInput.Parms.xlsx"), overwrite = T)
+  file.copy(file.path(maindir, "em_input", paste("BAM.DatInput.Parms_", input_filename, ".xlsx", sep="")), file.path(maindir, "em_input", "BAM.DatInput.Parms.xlsx"), overwrite = T)
   bam_parms=read_xlsx(path=file.path(maindir, "em_input", "BAM.DatInput.Parms.xlsx"))
 
   modify_input = "partial"
@@ -88,12 +88,12 @@ run_bam <- function(maindir=maindir, subdir="BAM", om_sim_num=NULL, casedir=case
     }
   }
 
-  cl <- detectCores()-2
+  cl <- ifelse(detectCores()==1, detectCores(), detectCores()-2)
   registerDoParallel(cl)
 
   foreach (om_sim = 1:om_sim_num) %dopar% {
     setwd(file.path(casedir, "output", subdir, paste("s", om_sim, sep="")))
-    file.copy(file.path(maindir, "em_input", "BAM-Sim.exe"), file.path(casedir,"output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"), overwrite = T)
+    file.copy(file.path(maindir, "em_input", paste("BAM-Sim_", input_filename, ".exe", sep="")), file.path(casedir,"output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"), overwrite = T)
     system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.dat"), sep = " "), show.output.on.console = FALSE)
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "BAM-Sim.exe"))
     file_list <- list.files(path = getwd())

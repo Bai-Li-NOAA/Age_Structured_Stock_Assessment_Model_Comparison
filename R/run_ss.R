@@ -4,7 +4,10 @@ run_ss <- function(maindir=maindir, subdir="SS", om_sim_num=NULL, casedir=casedi
   library(r4ss)
 
   setwd(file.path(casedir, "output", subdir))
-  file.copy(file.path(maindir, "em_input", input_filename), file.path(maindir, "em_input", "control.ss"), overwrite = T)
+  file.copy(file.path(maindir, "em_input", paste("control_", input_filename, ".ss", sep="")), file.path(maindir, "em_input", "control.ss"), overwrite = T)
+  file.copy(file.path(maindir, "em_input", paste("data_", input_filename, ".ss", sep="")), file.path(maindir, "em_input", "data.ss"), overwrite = T)
+  file.copy(file.path(maindir, "em_input", paste("wtatage_", input_filename, ".ss", sep="")), file.path(maindir, "em_input", "wtatage.ss"), overwrite = T)
+
   unlink(list.files(file.path(casedir, "output", "SS"), full.names = TRUE), recursive = TRUE)
   sapply(1:om_sim_num, function(x) dir.create(file.path(casedir, "output", subdir, paste("s", x, sep=""))))
 
@@ -66,7 +69,7 @@ run_ss <- function(maindir=maindir, subdir="SS", om_sim_num=NULL, casedir=casedi
     file.copy(file.path(maindir, "em_input", "wtatage.ss"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "wtatage.ss"), overwrite = T)
   }
 
-  cl <- detectCores()-2
+  cl <- ifelse(detectCores()==1, detectCores(), detectCores()-2)
   registerDoParallel(cl)
 
   foreach (om_sim = 1:om_sim_num) %dopar% {
@@ -81,7 +84,7 @@ run_ss <- function(maindir=maindir, subdir="SS", om_sim_num=NULL, casedir=casedi
                                                list.files(path = getwd(), pattern = c(".rdat")),
                                                list.files(path = getwd(), pattern = c(".cov")),
                                                list.files(path = getwd(), pattern = c("Report.sso")),
-                                               list.files(path = getwd(), pattern = c(".ss")),))]))
+                                               list.files(path = getwd(), pattern = c(".ss"))))]))
   }
   #stopCluster(cl)
 

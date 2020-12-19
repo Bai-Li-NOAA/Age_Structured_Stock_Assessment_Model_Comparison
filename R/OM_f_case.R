@@ -49,7 +49,7 @@ f_case <- function(f_pattern=1,
 
     if(f_pattern %in% c(3,4)) f_matrix[om_sim,col_id] <- c(seq(start_val, middle_val, length=middle_year), seq(middle_val, end_val, length=nyr-middle_year))*exp(f_dev_matrix[om_sim,col_id])
 
-    if(f_pattern == 5) f_matrix[om_sim,col_id] <- rep(start_val, length=nyr)*exp(f_dev_matrix[om_sim,col_id])
+    if(f_pattern == 5) f_matrix[om_sim,col_id] <- c(rep(start_val, length=middle_year), rep(middle_val, length=nyr-middle_year))*exp(f_dev_matrix[om_sim,col_id])
 
     if(f_pattern == 6) f_matrix[om_sim,col_id] <- f_val*exp(f_dev_matrix[om_sim,col_id])
   }

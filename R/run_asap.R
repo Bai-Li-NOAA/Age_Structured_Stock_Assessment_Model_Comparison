@@ -5,7 +5,7 @@ run_asap <- function(maindir=NULL, subdir="ASAP", om_sim_num=NULL, casedir=cased
 
   setwd(file.path(casedir, "output", subdir))
 
-  file.copy(file.path(maindir, "em_input", input_filename), file.path(maindir, "em_input", "asap3.DAT"), overwrite = T)
+  file.copy(file.path(maindir, "em_input", paste("asap3_", input_filename, ".DAT", sep="")), file.path(maindir, "em_input", "asap3.DAT"), overwrite = T)
 
   unlink(list.files(file.path(casedir, "output", "ASAP"), full.names = TRUE), recursive = TRUE)
 
@@ -47,7 +47,7 @@ run_asap <- function(maindir=NULL, subdir="ASAP", om_sim_num=NULL, casedir=cased
     WriteASAP3DatFile(fname = file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "asap3.DAT"), dat.object=asap_input, header.text = "")
   }))
 
-  cl <- detectCores()-2
+  cl <- ifelse(detectCores()==1, detectCores(), detectCores()-2)
   registerDoParallel(cl)
 
   foreach (om_sim = 1:om_sim_num) %dopar% {
@@ -61,7 +61,7 @@ run_asap <- function(maindir=NULL, subdir="ASAP", om_sim_num=NULL, casedir=cased
                                                list.files(path = getwd(), pattern = c(".std")),
                                                list.files(path = getwd(), pattern = c(".rdat")),
                                                list.files(path = getwd(), pattern = c(".cov")),
-                                               list.files(path = getwd(), pattern = c(".DAT")),))]))
+                                               list.files(path = getwd(), pattern = c(".DAT"))))]))
   }
   #stopCluster(cl)
 
