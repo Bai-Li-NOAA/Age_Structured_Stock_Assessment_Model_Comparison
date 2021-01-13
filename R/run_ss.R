@@ -1,5 +1,5 @@
 #' @export
-run_ss <- function(maindir=maindir, subdir="SS", om_sim_num=NULL, casedir=casedir, em_bias_cor=em_bias_cor, input_filename=NULL){
+run_ss <- function(maindir=maindir, subdir="SS", om_sim_num=NULL, casedir=casedir, em_bias_cor=em_bias_cor, input_filename=NULL, initial_equilibrium_F=TRUE){
   if(!("r4ss" %in% installed.packages()[,"Package"])) install.packages("r4ss")
   library(r4ss)
 
@@ -22,13 +22,23 @@ run_ss <- function(maindir=maindir, subdir="SS", om_sim_num=NULL, casedir=casedi
 
     } #incomplement
     if(modify_input == "partial") {
-      ss_data$catch <- as.data.frame(rbind(c(-999, 1, 1, em_input$L.obs$fleet1[1]/om_input$nages, sqrt(log(1+em_input$cv.L$fleet1^2))),
-                                           cbind(om_input$year,
-                                                 rep(1, times=om_input$nyr),
-                                                 rep(1, times=om_input$nyr),
-                                                 em_input$L.obs$fleet1,
-                                                 rep(sqrt(log(1+em_input$cv.L$fleet1^2)), times=length(em_input$L.obs$fleet1))))
-                                     )
+      if (initial_equilibrium_F==FALSE){
+        ss_data$catch <- as.data.frame(cbind(om_input$year,
+                                             rep(1, times=om_input$nyr),
+                                             rep(1, times=om_input$nyr),
+                                             em_input$L.obs$fleet1,
+                                             rep(sqrt(log(1+em_input$cv.L$fleet1^2)), times=length(em_input$L.obs$fleet1))))
+      } else {
+        ss_data$catch <- as.data.frame(rbind(c(-999, 1, 1, em_input$L.obs$fleet1[1]/om_input$nages, sqrt(log(1+em_input$cv.L$fleet1^2))),
+                                             cbind(om_input$year,
+                                                   rep(1, times=om_input$nyr),
+                                                   rep(1, times=om_input$nyr),
+                                                   em_input$L.obs$fleet1,
+                                                   rep(sqrt(log(1+em_input$cv.L$fleet1^2)), times=length(em_input$L.obs$fleet1))))
+        )
+      }
+
+
       names(ss_data$catch) <- c("year", "seas", "fleet", "catch", "catch_se")
 
       if (om_input$survey_num == 1) {
