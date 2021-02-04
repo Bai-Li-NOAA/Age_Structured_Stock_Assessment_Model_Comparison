@@ -18,7 +18,7 @@ run_mas = function(maindir=maindir, subdir="MAS", om_sim_num=NULL, casedir=cased
   sapply(1:om_sim_num, function(x) dir.create(file.path(casedir, "output", subdir, paste("s", x, sep=""))))
 
   for (om_sim in 1:om_sim_num){
-    devtools::load_all(rmas_dir)
+    # devtools::load_all(rmas_dir)
 
     #load the r4mas module
     load(file=file.path(casedir, "output", "OM", paste("OM", om_sim, ".RData", sep="")))
