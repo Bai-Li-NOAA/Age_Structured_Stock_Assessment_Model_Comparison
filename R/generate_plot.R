@@ -28,7 +28,8 @@ generate_plot <- function(em_names=NULL,
 
   if(length(na.omit(keep_sim_id)) < keep_sim_num) cat("Increase om_sim_num to get enough number of converged iterations!")
   keep_sim_id <<- na.omit(keep_sim_id)
-  keep_sim_num <<- input_list$keep_sim_num <- length(keep_sim_id)
+  keep_sim_num <<- length(keep_sim_id)
+  input_list$keep_sim_num <- length(keep_sim_id)
 
   #### Check plotted individual iteration real ID ####
   if(keep_sim_num <= figure_number) {
