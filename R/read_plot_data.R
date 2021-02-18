@@ -364,7 +364,10 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
 
     subdir = "SS"
     for (om_sim in 1:keep_sim_num){
-      ss_output <- SS_output(dir=file.path(casedir, "output", subdir, paste("s", keep_sim_id[om_sim], sep="")), ncols = 300, verbose=F, printstats=F)
+      ss_output <- SS_output(
+        dir=file.path(casedir, "output", subdir, paste("s", keep_sim_id[om_sim], sep="")),
+        ncols = 300,
+        verbose=F, printstats=F)
 
       setwd(file.path(casedir, "output", subdir, paste("s", keep_sim_id[om_sim], sep="")))
       ss_std <- readRep("ss", suffix = ".std")
