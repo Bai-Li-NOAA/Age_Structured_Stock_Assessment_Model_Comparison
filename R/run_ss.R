@@ -94,6 +94,7 @@ run_ss <- function(maindir=maindir, subdir="SS", om_sim_num=NULL, casedir=casedi
                                                list.files(path = getwd(), pattern = c(".rdat")),
                                                list.files(path = getwd(), pattern = c(".cov")),
                                                list.files(path = getwd(), pattern = c("Report.sso")),
+                                               list.files(path = getwd(), pattern = c("ss.cor")),
                                                list.files(path = getwd(), pattern = c(".ss"))))]))
   }
   #stopCluster(cl)
