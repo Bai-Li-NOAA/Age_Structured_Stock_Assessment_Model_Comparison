@@ -446,6 +446,10 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
     mas_fratio <- mas_ssbratio <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
     mas_agecomp <- list()
 
+    mas_geomR0 <- mas_arimR0 <-
+      mas_geomS0 <- mas_arimS0 <-
+      mas_geomDf <- mas_arimDf <- matrix(NA, nrow=1, ncol=keep_sim_num)
+
     subdir = "MAS"
     for (om_sim in 1:keep_sim_num){
       mas_output <- read_json(file.path(casedir, "output",  subdir, paste("s", keep_sim_id[om_sim], sep=""), paste("s", keep_sim_id[om_sim], ".json", sep="")))
@@ -469,9 +473,33 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
       mas_fratio[, om_sim] <- mas_Ftot[, om_sim]/mas_fmsy[om_sim]
       mas_ssbratio[, om_sim] <- mas_ssb[,om_sim]/mas_ssbmsy[om_sim]
       mas_agecomp[[om_sim]] <- apply(matrix(unlist(pop$undifferentiated$numbers_at_age$values), nrow=popdy$nyears, ncol=popdy$nages, byrow = T), 1, function(x) x/sum(x))
+
+      mas_geomR0[, om_sim] <- 0
+      mas_geomS0[, om_sim] <- 0
+      mas_geomDf[, om_sim] <- 0
+      mas_arimR0[, om_sim] <- 0
+      mas_arimS0[, om_sim] <- 0
+      mas_arimDf[, om_sim] <- 0
+
     }
-    mas_list <- list(mas_biomass, mas_abundance, mas_ssb, mas_recruit, mas_Ftot, mas_landing, mas_survey, mas_msy, mas_fmsy, mas_ssbmsy, mas_fratio, mas_ssbratio, mas_agecomp)
-    names(mas_list) <- c("biomass", "abundance", "ssb", "recruit", "Ftot", "landing", "survey", "msy", "fmsy", "ssbmsy", "fratio", "ssbratio", "agecomp")
+    mas_list <- list(mas_biomass, mas_abundance,
+                     mas_ssb, mas_recruit, mas_Ftot,
+                     mas_landing, mas_survey,
+                     mas_msy, mas_fmsy, mas_ssbmsy,
+                     mas_fratio, mas_ssbratio,
+                     mas_geomR0, mas_arimR0,
+                     mas_geomS0, mas_arimS0,
+                     mas_geomDf, mas_arimDf,
+                     mas_agecomp)
+    names(mas_list) <- c("biomass", "abundance",
+                         "ssb", "recruit", "Ftot",
+                         "landing", "survey",
+                         "msy", "fmsy", "ssbmsy",
+                         "fratio", "ssbratio",
+                         "geomR0", "arimR0",
+                         "geomS0", "arimS0",
+                         "geomDf", "arimDf",
+                         "agecomp")
     mas_list <<- mas_list
     save(mas_list, file=file.path(casedir, "output", "mas_output.RData"))
   }
