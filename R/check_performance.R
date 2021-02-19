@@ -9,6 +9,7 @@ check_performance <- function (em_names, casedir=NULL){
                       "geomS0", "arimS0",
                       "geomDf", "arimDf")
 
+  comparison_id <- which(names(om_list) %in% comparison_var)
 
   em_list <- list()
   for(i in 1:length(em_names)){
