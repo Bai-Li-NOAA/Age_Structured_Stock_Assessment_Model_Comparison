@@ -59,7 +59,7 @@ run_mas = function(maindir=maindir, subdir="MAS", om_sim_num=NULL, casedir=cased
     recruitment$constrained_deviations <- FALSE
     recruitment$deviations_min <- -15.0
     recruitment$deviations_max <- 15.0
-    recruitment$deviation_phase <- 1
+    recruitment$deviation_phase <- 2
     recruitment$SetDeviations(rep(0.0, times=om_input$nyr))
 
     #Growth
@@ -100,8 +100,8 @@ run_mas = function(maindir=maindir, subdir="MAS", om_sim_num=NULL, casedir=cased
     #Initial Deviations
     initial_deviations <- new(r4mas$InitialDeviations)
     initial_deviations$values <- rep(0, times=om_input$nages)
-    initial_deviations$estimate <- FALSE
-    initial_deviations$phase <- 1
+    initial_deviations$estimate <- TRUE
+    initial_deviations$phase <- 2
 
     population=new(r4mas$Population)
     for (y in 0:(nyears))
