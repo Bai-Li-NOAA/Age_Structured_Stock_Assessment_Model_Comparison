@@ -70,7 +70,7 @@ check_convergence <- function(em_names, om_sim_num, col, plot_ncol, plot_nrow, c
     keep_sim_id <- (1:om_sim_num)[1:keep_sim_num]
   } else {
     keep_sim_id <<- c(1:om_sim_num)[-unique(c(
-      unlist(sapply(1:length(em_names), function(x) which(convergence_measures$gradient[,x] > 0.001))),
+      unlist(sapply(1:length(em_names), function(x) which(convergence_measures$gradient[,x] > 0.006))),
       unique(unlist(sapply(1:ncol(convergence_measures$positive_hessian), function(x) which(convergence_measures$positive_hessian[,x]==0))))))][1:keep_sim_num]
   }
 
