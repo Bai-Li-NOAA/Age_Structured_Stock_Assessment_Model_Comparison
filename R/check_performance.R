@@ -8,6 +8,7 @@ check_performance <- function (em_names, casedir=NULL){
                       "geomR0", "arimR0",
                       "geomS0", "arimS0",
                       "geomDf", "arimDf")
+
   comparison_id <- which(names(om_list) %in% comparison_var)
 
   em_list <- list()
@@ -15,6 +16,7 @@ check_performance <- function (em_names, casedir=NULL){
     em_list[[i]] <- eval(as.name(tolower(paste(em_names, "_list", sep="")[i])))
   }
   em_list <<- em_list
+
 
   ## Relative error (RE)
   re_list <- list()
@@ -28,7 +30,7 @@ check_performance <- function (em_names, casedir=NULL){
       colnames(re) <- em_names
       re_var[[j]] <- re
     }
-    names(re_var) <- comparison_var
+    names(re_var) <- comparison_var[comparison_id]
     re_list[[k]] <- re_var
   }
   re_list <<- re_list
@@ -45,7 +47,7 @@ check_performance <- function (em_names, casedir=NULL){
       colnames(are) <- em_names
       are_var[[j]] <- are
     }
-    names(are_var) <- comparison_var
+    names(are_var) <- comparison_var[comparison_id]
     are_list[[k]] <- are_var
   }
   are_list <<- are_list
@@ -65,7 +67,7 @@ check_performance <- function (em_names, casedir=NULL){
       colnames(cc) <- em_names
       cc_var[[j]] <- cc
     }
-    names(cc_var) <- comparison_var
+    names(cc_var) <- comparison_var[comparison_id]
     cc_list[[k]] <- cc_var
   }
   cc_list <<- cc_list

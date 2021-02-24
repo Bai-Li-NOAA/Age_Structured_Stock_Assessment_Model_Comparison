@@ -19,9 +19,8 @@ check_convergence <- function(em_names, om_sim_num, col, plot_ncol, plot_nrow, c
         mas_output <- read_json(file.path(casedir, "output",  subdir, paste("s", om_sim, sep=""), paste("s", om_sim, ".json", sep="")))
         popdy<-mas_output$population_dynamics
         pop<-popdy$populations[[1]]
-        if (pop$MSY$F_msy > max(om_output$msy$f_seq) |
-            pop$MSY$F_msy < 0 |
-            pop$females$MSY$SSB_msy > (om_output$msy$SSBmsy*2) |
+        if (pop$MSY$F_msy < 0 |
+            # pop$females$MSY$SSB_msy > (om_output$msy$SSBmsy*2) |
             pop$MSY$B_msy < 0
             ) convergence_measures$positive_hessian[om_sim, em_id] <- 0
 
@@ -65,25 +64,31 @@ check_convergence <- function(em_names, om_sim_num, col, plot_ncol, plot_nrow, c
   # keep_sim_id <<- c(1:om_sim_num)[-unique(c(
   # unlist(sapply(1:length(em_names), function(x) which(convergence_measures$gradient[,x] %in% boxplot.stats(convergence_measures$gradient[,x])$out))),
   # unique(unlist(sapply(1:ncol(convergence_measures$positive_hessian), function(x) which(convergence_measures$positive_hessian[,x]==0))))))][1:keep_sim_num]
-  #
-  keep_sim_id <<- c(1:om_sim_num)[-unique(c(
-    unlist(sapply(1:length(em_names), function(x) which(convergence_measures$gradient[,x] > 0.006))),
-    unique(unlist(sapply(1:ncol(convergence_measures$positive_hessian), function(x) which(convergence_measures$positive_hessian[,x]==0))))))][1:keep_sim_num]
 
 
-  if(max(convergence_measures$gradient[keep_sim_id,], na.rm = T)<0.1){
-    jpeg(file=file.path(casedir, "figure", "Gradient_no_outliers.jpg"), width=120, height=120, units="mm", res=300)
-    par(mfrow=c(plot_nrow,plot_ncol))
-    xlim = c(0, max(convergence_measures$gradient[keep_sim_id,], na.rm = T))
-    bins <- seq(0, max(convergence_measures$gradient[keep_sim_id,], na.rm = T)*2, by=0.0005)
-    for(em_id in 1:length(em_names)){
-      #hist(convergence_measures$gradient[keep_sim_id,em_id], xlim=xlim, xlab = "Gradient", main="", col=col[em_id+1], breaks = bins)
-      hist(convergence_measures$gradient[keep_sim_id,em_id], xlim=xlim, xlab = "Gradient", main="", col=col[em_id+1], breaks=5)
-    legend("topright", em_names[em_id], bty="n")
-    box()
-    }
-    dev.off()
+  if ((length(unlist(sapply(1:length(em_names), function(x) which(convergence_measures$gradient[,x] > 0.001)))) == 0) | (length(unique(unlist(sapply(1:ncol(convergence_measures$positive_hessian), function(x) which(convergence_measures$positive_hessian[,x]==0))))) == 0)) {
+    keep_sim_id <- (1:om_sim_num)[1:keep_sim_num]
+  } else {
+    keep_sim_id <<- c(1:om_sim_num)[-unique(c(
+      unlist(sapply(1:length(em_names), function(x) which(convergence_measures$gradient[,x] > 0.006))),
+      unique(unlist(sapply(1:ncol(convergence_measures$positive_hessian), function(x) which(convergence_measures$positive_hessian[,x]==0))))))][1:keep_sim_num]
   }
+
+
+
+  # if(max(convergence_measures$gradient[keep_sim_id,], na.rm = T)<0.1){
+  #   jpeg(file=file.path(casedir, "figure", "Gradient_no_outliers.jpg"), width=120, height=120, units="mm", res=300)
+  #   par(mfrow=c(plot_nrow,plot_ncol))
+  #   xlim = c(0, max(convergence_measures$gradient[keep_sim_id,], na.rm = T))
+  #   bins <- seq(0, max(convergence_measures$gradient[keep_sim_id,], na.rm = T)*2, by=0.0005)
+  #   for(em_id in 1:length(em_names)){
+  #     #hist(convergence_measures$gradient[keep_sim_id,em_id], xlim=xlim, xlab = "Gradient", main="", col=col[em_id+1], breaks = bins)
+  #     hist(convergence_measures$gradient[keep_sim_id,em_id], xlim=xlim, xlab = "Gradient", main="", col=col[em_id+1], breaks=5)
+  #   legend("topright", em_names[em_id], bty="n")
+  #   box()
+  #   }
+  #   dev.off()
+  # }
 
   keep_sim_num <<- length(keep_sim_id)
   save(keep_sim_id, om_sim_num, keep_sim_num, file=file.path(casedir, "output", "keep_sim_id.RData"))

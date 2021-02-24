@@ -87,14 +87,15 @@ run_ss <- function(maindir=maindir, subdir="SS", om_sim_num=NULL, casedir=casedi
     file.copy(file.path(maindir, "em_input", "ss.exe"), file.path(casedir,"output", subdir, paste("s", om_sim, sep=""), "ss.exe"), overwrite = T)
     system(paste(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ss.exe"), file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "data.ss"), sep = " "), show.output.on.console = FALSE)
     file.remove(file.path(casedir, "output", subdir, paste("s", om_sim, sep=""), "ss.exe"))
-    file_list <- list.files(path = getwd())
-    file.remove(c(file_list[!(file_list %in% c(list.files(path = getwd(), pattern = c(".rep")),
-                                               list.files(path = getwd(), pattern = c(".par")),
-                                               list.files(path = getwd(), pattern = c(".std")),
-                                               list.files(path = getwd(), pattern = c(".rdat")),
-                                               list.files(path = getwd(), pattern = c(".cov")),
-                                               list.files(path = getwd(), pattern = c("Report.sso")),
-                                               list.files(path = getwd(), pattern = c(".ss"))))]))
+    # file_list <- list.files(path = getwd())
+    # file.remove(c(file_list[!(file_list %in% c(list.files(path = getwd(), pattern = c(".rep")),
+    #                                            list.files(path = getwd(), pattern = c(".par")),
+    #                                            list.files(path = getwd(), pattern = c(".std")),
+    #                                            list.files(path = getwd(), pattern = c(".rdat")),
+    #                                            list.files(path = getwd(), pattern = c(".cov")),
+    #                                            list.files(path = getwd(), pattern = c("Report.sso")),
+    #                                            list.files(path = getwd(), pattern = c("ss.cor")),
+    #                                            list.files(path = getwd(), pattern = c(".ss"))))]))
   }
   #stopCluster(cl)
 
