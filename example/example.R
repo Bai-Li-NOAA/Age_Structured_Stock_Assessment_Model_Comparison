@@ -3,19 +3,12 @@
 
 # install.packages("remotes")
 # install.packages("devtools")
-# remotes::install_github(repo="Bai-Li-NOAA/Age_Structured_Stock_Assessment_Model_Comparison", force=TRUE)
-# library(ASSAMC)
+remotes::install_github(repo="Bai-Li-NOAA/Age_Structured_Stock_Assessment_Model_Comparison",
+                        ref="spatial-structure")
+library(ASSAMC)
 
-setwd("C:/Users/bai.li/Documents/Age_Structured_Stock_Assessment_Model_Comparison_spatial/")
-devtools::load_all()
-## Need to install packages below:
-## ASAPplots, r4ss, readxl, PBSadmb
-#devtools::install_github("cmlegault/ASAPplots", build_vignettes = TRUE)
-library(readxl)
-library(PBSadmb)
-library(ASAPplots)
-library(r4ss)
-
+# setwd("C:/Users/bai.li/Documents/Age_Structured_Stock_Assessment_Model_Comparison_spatial/")
+# devtools::load_all()
 
 # Working directory settings ------------------------------------------------------------------
 
@@ -23,7 +16,7 @@ maindir <- "C:/Users/bai.li/Documents/Age_Structured_Stock_Assessment_Model_Comp
 
 # Basic simulation settings -------------------------------------------------------------------
 
-om_sim_num <- 160 # total number of iterations per case
+om_sim_num <- 100 # total number of iterations per case
 keep_sim_num <- 100 # number of kept iterations per case
 figure_number <- 10 # number of individual iteration to plot
 
@@ -50,7 +43,7 @@ movement_matrix <- lapply(1:length(year),
 ages <- 1:12   #Age structure of the popn
 
 initial_equilibrium_F <- TRUE
-median_R0 <- 1000000 #Average annual unfished recruitment (scales the popn)
+median_R0 <- 1000000 #Average annual unfished recruitment
 median_h <- 0.75 #Steepness of the Beverton-Holt spawner-recruit relationship.
 mean_R0 <- NULL
 mean_h <- NULL
@@ -125,20 +118,129 @@ middle_year <- NULL
 logR_sd <- 0.6
 r_dev_change <- TRUE
 
-om_bias_cor <- TRUE
-bias_cor_method <- "median_unbiased" #Options: "none", "median_unbiased", and "mean_unbiased"
-em_bias_cor <- TRUE
+om_bias_cor <- FALSE
+bias_cor_method <- "none" #Options: "none", "median_unbiased", and "mean_unbiased"
+em_bias_cor <- FALSE
 
 stocks$stock1 <- save_stock_input(base_stock=TRUE)
 stocks$stock2 <- save_stock_input(base_stock=FALSE,
                                   input_list=stocks$stock1,
                                   logR_sd=0.8)
 stocks$stock3 <- save_stock_input(base_stock=FALSE,
-                                  input_list=stocks$stock1)
+                                  input_list=stocks$stock1,
+                                  start_val=0.1,
+                                  end_val=0.6)
 
-#### Base Case (Case 0) ####
+
+# Null case -----------------------------------------------------------------------------------
+
 base_case_input <- save_initial_input(base_case = TRUE,
                                       input_list = stocks,
                                       case_name = "C0")
-#### Run OM
-run_om(input_list=base_case_input, show_iter_num=F)
+# Run om
+run_om(input_list=base_case_input, show_iter_num=T)
+
+
+# Aggregate OM outputs ------------------------------------------------------------------------
+
+om_list <- vector(mode="list", length=3)
+
+for (j in 1:length(om_output$stocks)){
+  load(file.path(maindir, "C0", "output", "OM", paste("OM", 1, ".RData", sep="")))
+
+  om_biomass <- om_abundance <-
+    om_ssb <- om_recruit <- om_Ftot <- om_Fmul <-
+    om_landing <- om_survey <- matrix(NA, nrow=om_input[[j]]$nyr, ncol=om_sim_num)
+
+  om_msy <- om_fmsy <- om_ssbmsy <- matrix(NA, nrow=1, ncol=om_sim_num)
+
+  om_fratio <- om_ssbratio <- matrix(NA, nrow=om_input[[j]]$nyr, ncol=om_sim_num)
+  om_agecomp <- list()
+
+  om_landing_err <- om_survey_err <- matrix(NA, nrow=om_input[[j]]$nyr, ncol=om_sim_num)
+  om_geomR0 <- om_arimR0 <-
+    om_geomS0 <- om_arimS0 <-
+    om_geomDf <- om_arimDf <- matrix(NA, nrow=1, ncol=om_sim_num)
+
+  for (om_sim in 1:om_sim_num){
+
+    load(file.path(maindir, "C0", "output", "OM", paste("OM", om_sim, ".RData", sep="")))
+
+    om_biomass[,om_sim] <- om_output$stocks[[j]]$biomass.mt
+    om_abundance[,om_sim] <- om_output$stocks[[j]]$abundance/1000
+    om_ssb[,om_sim] <- om_output$stocks[[j]]$SSB
+    om_recruit[,om_sim] <- om_output$stocks[[j]]$N.age[,1]/1000
+    om_Ftot[,om_sim] <- apply(om_output$stocks[[j]]$FAA, 1, max)
+    om_landing[,om_sim] <- om_output$stocks[[j]]$L.mt$fleet1
+    om_survey[,om_sim] <- om_output$stocks[[j]]$survey_index$survey1
+    om_msy[, om_sim] <- om_output$stocks[[j]]$msy$msy
+    om_fmsy[, om_sim] <- round(om_output$stocks[[j]]$msy$Fmsy, digits = 3)
+    om_ssbmsy[, om_sim] <- om_output$stocks[[j]]$msy$SSBmsy
+    om_fratio[, om_sim] <- om_Ftot[, om_sim]/om_fmsy[om_sim]
+    om_ssbratio[, om_sim] <- om_ssb[, om_sim]/om_ssbmsy[om_sim]
+    om_agecomp[[om_sim]] <- apply(om_output$stocks[[j]]$N.age/1000, 1, function(x) x/sum(x))
+    om_geomR0[,om_sim] <- om_input[[j]]$median_R0/1000
+    om_arimR0[,om_sim] <- om_input[[j]]$mean_R0/1000
+    om_geomS0[,om_sim] <- om_input[[j]]$median_R0*om_input[[j]]$Phi.0
+    om_arimS0[,om_sim] <- om_input[[j]]$mean_R0*om_input[[j]]$Phi.0
+    om_geomDf[,om_sim] <- om_ssb[nrow(om_ssb),om_sim]/om_geomS0[,om_sim]
+    om_arimDf[,om_sim] <- om_ssb[nrow(om_ssb),om_sim]/om_arimS0[,om_sim]
+
+  }
+
+  om_list[[j]] <- list(om_biomass, om_abundance,
+                       om_ssb, om_recruit, om_Ftot,
+                       om_landing, om_survey,
+                       om_msy, om_fmsy, om_ssbmsy,
+                       om_fratio, om_ssbratio,
+                       om_geomR0, om_arimR0,
+                       om_geomS0, om_arimS0,
+                       om_geomDf, om_arimDf,
+                       om_agecomp)
+
+  names(om_list[[j]]) <- c("biomass", "abundance",
+                           "ssb", "recruit", "Ftot",
+                           "landing", "survey",
+                           "msy", "fmsy", "ssbmsy",
+                           "fratio", "ssbratio",
+                           "geomR0", "arimR0",
+                           "geomS0", "arimS0",
+                           "geomDf", "arimDf",
+                           "agecomp")
+
+}
+
+
+# Plot ouputs ---------------------------------------------------------------------------------
+
+var <- c("biomass", "abundance",
+         "ssb", "recruit", "Ftot",
+         "landing", "survey")
+ylab <- c("Biomass", "Abundance",
+          "SSB", "R", "F",
+          "Landings", "Survey Index")
+
+sim_id <- 1
+for (i in 1:length(var)){
+  ylim = range(om_list[[1]][[var[i]]][,sim_id],
+               om_list[[2]][[var[i]]][,sim_id],
+               om_list[[3]][[var[i]]][,sim_id])
+
+  plot(0, type="n",
+       xlab="Year",
+       ylab=ylab[i],
+       xlim=range(om_input$stock1$year),
+       ylim=ylim)
+
+  for (j in 1:length(om_list)){
+    lines(om_input[[j]]$year, om_list[[j]][[var[i]]][,sim_id],
+          col=j, type="o",
+          pch=j, lty=j)
+  }
+  legend("topright",
+         paste("Stock", 1:length(om_output$stocks)),
+         col=1:length(om_output$stocks),
+         pch=1:length(om_output$stocks),
+         lty=1:length(om_output$stocks),
+         bty="n")
+}
