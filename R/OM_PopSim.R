@@ -110,20 +110,33 @@ popsim<-function(x){
           model=x[[j]]$SRmodel)*exp(x[[j]]$logR.resid[i+1])
       }
 
-      for (a in 1:(x[[j]]$nages-1))
-      {stocks[[j]]$N.age[(i+1),(a+1)]=stocks[[j]]$N.age[i,a]*exp(-stocks[[j]]$Z[a])} #Abundance at age in each year
+      # If movement happens after recruitment
+      stocks_movement <- stocks
+      for (k in 1:length(stocks)){
+        temp <- matrix(NA, nrow=length(stocks), ncol=length(stocks[[k]]$N.age[(i+1),1]))
+        for (m in 1:nrow(x[[k]]$movement_matrix[[(i+1)]])){
+          temp[m, ] <- stocks[[m]]$N.age[(i+1),1]*x[[m]]$movement_matrix[[(i+1)]][m,k]
+        }
+        stocks_movement[[k]]$N.age[(i+1),1] <- apply(temp, 2, sum)
+      }
+      stocks <- stocks_movement
+
+      for (a in 1:(x[[j]]$nages-1)){
+        stocks[[j]]$N.age[(i+1),(a+1)]=stocks[[j]]$N.age[i,a]*exp(-stocks[[j]]$Z[a])
+      } #Abundance at age in each year
       stocks[[j]]$N.age[(i+1),nages]=stocks[[j]]$N.age[(i+1),nages] + stocks[[j]]$N.age[i,nages]*exp(-stocks[[j]]$Z[nages]) #Plus group correction
     }
 
-    stocks_movement <- stocks
-    for (k in 1:length(stocks)){
-      temp <- matrix(NA, nrow=length(stocks), ncol=length(stocks[[k]]$N.age[(i+1),]))
-      for (j in 1:nrow(x[[k]]$movement_matrix[[(i+1)]])){
-        temp[j, ] <- stocks[[j]]$N.age[(i+1),]*x[[j]]$movement_matrix[[(i+1)]][j,k]
-      }
-      stocks_movement[[k]]$N.age[(i+1),] <- apply(temp, 2, sum)
-    }
-    stocks <- stocks_movement
+    # If movement happens in the end of the fishing
+    # stocks_movement <- stocks
+    # for (k in 1:length(stocks)){
+    #   temp <- matrix(NA, nrow=length(stocks), ncol=length(stocks[[k]]$N.age[(i+1),]))
+    #   for (m in 1:nrow(x[[k]]$movement_matrix[[(i+1)]])){
+    #     temp[m, ] <- stocks[[m]]$N.age[(i+1),]*x[[m]]$movement_matrix[[(i+1)]][m,k]
+    #   }
+    #   stocks_movement[[k]]$N.age[(i+1),] <- apply(temp, 2, sum)
+    # }
+    # stocks <- stocks_movement
 
     for (j in 1:length(stocks)){
       stocks[[j]]$L.age$fleet1[i,]=x[[j]]$f[i]*x[[j]]$selex_fleet$fleet1/(stocks[[j]]$Z)*stocks[[j]]$N.age[i,]*(1-exp(-stocks[[j]]$Z))
