@@ -123,13 +123,27 @@ bias_cor_method <- "none" #Options: "none", "median_unbiased", and "mean_unbiase
 em_bias_cor <- FALSE
 
 stocks$stock1 <- save_stock_input(base_stock=TRUE)
+
+# Reset fleet selectivity
+sel_fleet <- list()
+sel_fleet$fleet1$pattern <- 1
+sel_fleet$fleet1$A50.sel1 <- 3
+sel_fleet$fleet1$slope.sel1 <- 2
 stocks$stock2 <- save_stock_input(base_stock=FALSE,
                                   input_list=stocks$stock1,
-                                  logR_sd=0.8)
+                                  logR_sd=0.8,
+                                  sel_fleet=sel_fleet)
+
+# Reset fleet selectivity
+sel_fleet <- list()
+sel_fleet$fleet1$pattern <- 1
+sel_fleet$fleet1$A50.sel1 <- 2
+sel_fleet$fleet1$slope.sel1 <- 0.5
 stocks$stock3 <- save_stock_input(base_stock=FALSE,
                                   input_list=stocks$stock1,
                                   start_val=0.1,
-                                  end_val=0.6)
+                                  end_val=0.6,
+                                  sel_fleet=sel_fleet)
 
 
 # Null case -----------------------------------------------------------------------------------
