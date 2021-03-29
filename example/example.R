@@ -3,16 +3,16 @@
 
 # install.packages("remotes")
 # install.packages("devtools")
-remotes::install_github(repo="Bai-Li-NOAA/Age_Structured_Stock_Assessment_Model_Comparison",
-                        ref="spatial-structure")
-library(ASSAMC)
+# remotes::install_github(repo="Bai-Li-NOAA/Age_Structured_Stock_Assessment_Model_Comparison",
+#                         ref="spatial-structure")
+# library(ASSAMC)
 
-# setwd("C:/Users/bai.li/Documents/Age_Structured_Stock_Assessment_Model_Comparison_spatial/")
-# devtools::load_all()
+setwd("C:/Users/bai.li/Documents/Age_Structured_Stock_Assessment_Model_Comparison/")
+devtools::load_all()
 
 # Working directory settings ------------------------------------------------------------------
 
-maindir <- "C:/Users/bai.li/Documents/Age_Structured_Stock_Assessment_Model_Comparison_spatial/example"
+maindir <- "C:/Users/bai.li/Documents/Age_Structured_Stock_Assessment_Model_Comparison/example"
 
 # Basic simulation settings -------------------------------------------------------------------
 
@@ -28,6 +28,18 @@ year <- 1:30
 num_stock <- 3
 stocks <- vector(mode="list", length=num_stock)
 names(stocks) <- paste("stock", 1:num_stock, sep="")
+
+
+# Recruitment transportation probability settings ---------------------------------------------
+recruit_transportation <- lapply(1:length(year),
+                                 function(x)
+                                   matrix(c(1, 1, 1),
+                                          ncol=3, byrow=T))
+# recruit_transportation <- lapply(1:length(year),
+#                                  function(x)
+#                                    matrix(c(0.68, 0.22, 0.10),
+#                                           ncol=3, byrow=T))
+
 
 # Movement Settings ---------------------------------------------------------------------
 movement_matrix <- lapply(1:length(year),
@@ -104,6 +116,13 @@ sel_survey$survey1$pattern <- 1
 sel_survey$survey1$A50.sel1 <- 1.5
 sel_survey$survey1$slope.sel1 <- 2
 
+
+
+# Bilogical reference points F vectors --------------------------------------------------------
+brp_f_vector <- seq(0.0, 1, by=0.1)
+# brp_f_option <- "independentF" # other options: dependentF
+brp_f_option <- "dependentF" # other options: dependentF
+
 #### Other settings ####
 logf_sd <- 0.2
 f_dev_change <- FALSE
@@ -137,13 +156,16 @@ stocks$stock2 <- save_stock_input(base_stock=FALSE,
 # Reset fleet selectivity
 sel_fleet <- list()
 sel_fleet$fleet1$pattern <- 1
-sel_fleet$fleet1$A50.sel1 <- 2
-sel_fleet$fleet1$slope.sel1 <- 0.5
+sel_fleet$fleet1$A50.sel1 <- 1
+sel_fleet$fleet1$slope.sel1 <- 3
+
+brp_f_vector = seq(0.5, 2.5, by=0.1)
 stocks$stock3 <- save_stock_input(base_stock=FALSE,
                                   input_list=stocks$stock1,
-                                  start_val=0.1,
-                                  end_val=0.6,
-                                  sel_fleet=sel_fleet)
+                                  start_val=1,
+                                  end_val=2,
+                                  sel_fleet=sel_fleet,
+                                  brp_f_vector=brp_f_vector)
 
 
 # Null case -----------------------------------------------------------------------------------
@@ -188,8 +210,8 @@ for (j in 1:length(om_output$stocks)){
     om_landing[,om_sim] <- om_output$stocks[[j]]$L.mt$fleet1
     om_survey[,om_sim] <- om_output$stocks[[j]]$survey_index$survey1
     om_msy[, om_sim] <- om_output$stocks[[j]]$msy$msy
-    om_fmsy[, om_sim] <- round(om_output$stocks[[j]]$msy$Fmsy, digits = 3)
-    om_ssbmsy[, om_sim] <- om_output$stocks[[j]]$msy$SSBmsy
+    om_fmsy[, om_sim] <- unique(round(om_output$stocks[[j]]$msy$Fmsy, digits = 3))
+    om_ssbmsy[, om_sim] <- unique(om_output$stocks[[j]]$msy$SSBmsy)
     om_fratio[, om_sim] <- om_Ftot[, om_sim]/om_fmsy[om_sim]
     om_ssbratio[, om_sim] <- om_ssb[, om_sim]/om_ssbmsy[om_sim]
     om_agecomp[[om_sim]] <- apply(om_output$stocks[[j]]$N.age/1000, 1, function(x) x/sum(x))
@@ -252,9 +274,51 @@ for (i in 1:length(var)){
           pch=j, lty=j)
   }
   legend("topright",
-         paste("Stock", 1:length(om_output$stocks)),
+         paste("Area", 1:length(om_output$stocks)),
          col=1:length(om_output$stocks),
          pch=1:length(om_output$stocks),
          lty=1:length(om_output$stocks),
          bty="n")
 }
+
+
+# Plot yield over F ---------------------------------------------------------------------------------
+ylim = range(om_output$stocks$stock1$msy$L_eq,
+             om_output$stocks$stock2$msy$L_eq,
+             om_output$stocks$stock3$msy$L_eq)
+xlim = c(0,2)
+
+plot(om_output$stocks$stock1$msy$brp_f_vector,
+     om_output$stocks$stock1$msy$L_eq,
+     ylim=ylim, xlim=xlim,
+     xlab="F", ylab="Yield",
+     type="l", lty=1, col=1)
+lines(om_output$stocks$stock2$msy$brp_f_vector,
+      om_output$stocks$stock2$msy$L_eq,
+      lty=2, col=2)
+lines(om_output$stocks$stock3$msy$brp_f_vector,
+      om_output$stocks$stock3$msy$L_eq,
+      lty=3, col=3)
+
+om_output$stocks$stock1$msy$Fmsy
+om_output$stocks$stock2$msy$Fmsy
+om_output$stocks$stock3$msy$Fmsy
+which.max(om_output$stocks$stock1$msy$L_eq)
+which.max(om_output$stocks$stock2$msy$L_eq)
+which.max(om_output$stocks$stock3$msy$L_eq)
+
+f_list <- vector(mode="list", length=length(om_output$stocks))
+for (i in 1:length(f_list)){
+  f_list[[i]] <- stocks[[i]]$brp_f_vector
+}
+
+f_combinations <- expand.grid(f_list)
+data <- c(f_combinations,
+          om_output$stocks$stock1$msy$L_eq,
+          om_output$stocks$stock2$msy$L_eq,
+          om_output$stocks$stock3$msy$L_eq)
+sum_yield <- om_output$stocks$stock1$msy$L_eq+
+  om_output$stocks$stock2$msy$L_eq+
+  om_output$stocks$stock3$msy$L_eq
+which.max(sum_yield)
+f_combinations[157,] #0.2, 0.3, 0.7
