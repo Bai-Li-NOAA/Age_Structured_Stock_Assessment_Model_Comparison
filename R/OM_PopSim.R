@@ -11,7 +11,7 @@ popsim<-function(x){
   #logR.resids = recruitment residuals (lognormal)
 
 
-  stocks <- vector(mode="list", length=length(om_input))
+  stocks <- vector(mode="list", length=length(x))
   names(stocks) <- paste("stock", 1:length(stocks), sep="")
 
   for (i in 1:length(x)){
@@ -78,16 +78,6 @@ popsim<-function(x){
     stocks[[i]]$N.age[1,]=N.age[1,]
   }
 
-  stocks_movement <- stocks
-  for (i in 1:length(stocks)){
-    temp <- matrix(NA, nrow=length(stocks), ncol=length(stocks[[i]]$N.age[1,]))
-    for (j in 1:nrow(x[[i]]$movement_matrix[[1]])){
-      temp[j, ] <- stocks[[j]]$N.age[1,]*x[[j]]$movement_matrix[[1]][j,i]
-    }
-    stocks_movement[[i]]$N.age[1,] <- apply(temp, 2, sum)
-  }
-  stocks <- stocks_movement
-
   for (i in 1:(x[[1]]$nyr-1)){
     for (j in 1:length(x)) {
       stocks[[j]]$Z=x[[j]]$f[i]*x[[j]]$selex_fleet$fleet1 + x[[j]]$M.age
@@ -110,54 +100,25 @@ popsim<-function(x){
           model=x[[j]]$SRmodel)*exp(x[[j]]$logR.resid[i+1])
       }
 
-      # If movement happens after recruitment for age 1 only
-      # stocks_movement <- stocks
-      # for (k in 1:length(stocks)){
-      #   temp <- matrix(NA, nrow=length(stocks), ncol=length(stocks[[k]]$N.age[(i+1),1]))
-      #   for (m in 1:nrow(x[[k]]$movement_matrix[[(i+1)]])){
-      # temp[m, ] <- stocks[[m]]$N.age[(i+1),1]*x[[m]]$movement_matrix[[(i+1)]][m,k]
-      #   }
-      #   stocks_movement[[k]]$N.age[(i+1),1] <- apply(temp, 2, sum)
-      # }
-      # stocks <- stocks_movement
-      #
-      # for (a in 1:(x[[j]]$nages-1)){
-      #   stocks[[j]]$N.age[(i+1),(a+1)]=stocks[[j]]$N.age[i,a]*exp(-stocks[[j]]$Z[a])
-      # } #Abundance at age in each year
-      # stocks[[j]]$N.age[(i+1),nages]=stocks[[j]]$N.age[(i+1),nages] + stocks[[j]]$N.age[i,nages]*exp(-stocks[[j]]$Z[nages]) #Plus group correction
-
-      # If movement happened after recruitment for all ages
-      for (a in 1:(x[[j]]$nages-1)){
-        stocks[[j]]$N.age[(i+1),(a+1)]=stocks[[j]]$N.age[i,a]
-      } #Abundance at age in each year
-
-      stocks_movement <- stocks
-      for (k in 1:length(stocks)){
-        temp <- matrix(NA, nrow=length(stocks), ncol=length(stocks[[k]]$N.age[(i+1),]))
-        for (m in 1:nrow(x[[k]]$movement_matrix[[(i+1)]])){
-          temp[m, ] <- stocks[[m]]$N.age[(i+1),]*x[[m]]$movement_matrix[[(i+1)]][m,k]
-        }
-        stocks_movement[[k]]$N.age[(i+1),] <- apply(temp, 2, sum)
-      }
-      stocks <- stocks_movement
+      ## It is inherently assumed that no movement or dispersal of individuals out of the region of birth occurs before age 1. The model could be easily be altered to allow for this by calclating both local and total recruitment for each sub-population, but it requires an additional data source to help inform larval dispersal coefficients estimates.
 
       for (a in 1:(x[[j]]$nages-1)){
-        stocks[[j]]$N.age[(i+1),(a+1)]=stocks[[j]]$N.age[(i+1),(a+1)]*exp(-stocks[[j]]$Z[a])
+        stocks[[j]]$N.age[(i+1),(a+1)]=stocks[[j]]$N.age[i,a]*exp(-stocks[[j]]$Z[a])
       } #Abundance at age in each year
       stocks[[j]]$N.age[(i+1),nages]=stocks[[j]]$N.age[(i+1),nages] + stocks[[j]]$N.age[i,nages]*exp(-stocks[[j]]$Z[nages]) #Plus group correction
 
     }
 
-    # If movement happens in the end of the fishing
-    # stocks_movement <- stocks
-    # for (k in 1:length(stocks)){
-    #   temp <- matrix(NA, nrow=length(stocks), ncol=length(stocks[[k]]$N.age[(i+1),]))
-    #   for (m in 1:nrow(x[[k]]$movement_matrix[[(i+1)]])){
-    #     temp[m, ] <- stocks[[m]]$N.age[(i+1),]*x[[m]]$movement_matrix[[(i+1)]][m,k]
-    #   }
-    #   stocks_movement[[k]]$N.age[(i+1),] <- apply(temp, 2, sum)
-    # }
-    # stocks <- stocks_movement
+    # Movement
+    stocks_movement <- stocks
+    for (k in 1:length(stocks)){
+      temp <- matrix(NA, nrow=length(stocks), ncol=length(stocks[[k]]$N.age[(i+1),]))
+      for (m in 1:nrow(x[[k]]$movement_matrix[[(i+1)]])){
+        temp[m, ] <- stocks[[m]]$N.age[(i+1),]*x[[m]]$movement_matrix[[(i+1)]][m,k]
+      }
+      stocks_movement[[k]]$N.age[(i+1),] <- apply(temp, 2, sum)
+    }
+    stocks <- stocks_movement
 
     for (j in 1:length(stocks)){
       stocks[[j]]$L.age$fleet1[i,]=x[[j]]$f[i]*x[[j]]$selex_fleet$fleet1/(stocks[[j]]$Z)*stocks[[j]]$N.age[i,]*(1-exp(-stocks[[j]]$Z))
@@ -179,25 +140,59 @@ popsim<-function(x){
     stocks[[i]]$biomass.mt[x[[i]]$nyr]=sum(stocks[[i]]$N.age[x[[i]]$nyr,]*x[[i]]$W.mt)
   }
 
+  # Bilogical reference points calculation
+  if (brp_f_option == "independentF") {
+    for (i in 1:length(x)){
+      x[[i]]$selex.D <- rep(0,x[[i]]$nages) #selex of discards. not used here (set to 0), but required as input for msy calculations
+      stocks[[i]]$msy <- msy_calcs_independentF(
+        steep=x[[i]]$h,
+        R0=x[[i]]$R0,
+        M=x[[i]]$M.age,
+        wgt=x[[i]]$W.mt,
+        prop.f=x[[i]]$proportion.female,
+        selL=x[[i]]$selex_fleet$fleet1,
+        selD=x[[i]]$selex.D,
+        selZ=x[[i]]$selex_fleet$fleet1,
+        mat.f=x[[i]]$mat.age,
+        mat.m=NULL,
+        sigma=x[[i]]$logR_sd,
+        om_bias_cor=x[[i]]$om_bias_cor,
+        bias_cor_method=x[[i]]$bias_cor_method,
+        SRmodel=x[[i]]$SRmodel,
+        brp_f_vector=x[[i]]$brp_f_vector)
+    }
+  }
+
+  if (brp_f_option == "dependentF") {
+    f_list <- vector(mode="list", length=length(x))
+    for (i in 1:length(x)){
+      f_list[[i]] <- x[[i]]$brp_f_vector
+    }
+
+    f_combinations <- expand.grid(f_list)
+
+    for (i in 1:length(x)){
+      x[[i]]$selex.D <- rep(0,x[[i]]$nages) #selex of discards. not used here (set to 0), but required as input for msy calculations
+      stocks[[i]]$msy <- msy_calcs_independentF(
+        steep=x[[i]]$h,
+        R0=x[[i]]$R0,
+        M=x[[i]]$M.age,
+        wgt=x[[i]]$W.mt,
+        prop.f=x[[i]]$proportion.female,
+        selL=x[[i]]$selex_fleet$fleet1,
+        selD=x[[i]]$selex.D,
+        selZ=x[[i]]$selex_fleet$fleet1,
+        mat.f=x[[i]]$mat.age,
+        mat.m=NULL,
+        sigma=x[[i]]$logR_sd,
+        om_bias_cor=x[[i]]$om_bias_cor,
+        bias_cor_method=x[[i]]$bias_cor_method,
+        SRmodel=x[[i]]$SRmodel,
+        brp_f_vector=f_combinations[,i])
+    }
+  }
+
   for (i in 1:length(stocks)){
-    x[[i]]$selex.D <- rep(0,x[[i]]$nages) #selex of discards. not used here (set to 0), but required as input for msy calculations
-    stocks[[i]]$msy <- msy_calcs(
-      steep=x[[i]]$h,
-      R0=x[[i]]$R0,
-      M=x[[i]]$M.age,
-      wgt=x[[i]]$W.mt,
-      prop.f=x[[i]]$proportion.female,
-      selL=x[[i]]$selex_fleet$fleet1,
-      selD=x[[i]]$selex.D,
-      selZ=x[[i]]$selex_fleet$fleet1,
-      mat.f=x[[i]]$mat.age,
-      mat.m=NULL,
-      sigma=x[[i]]$logR_sd,
-      maxF=4.0,
-      step=0.001,
-      om_bias_cor=x[[i]]$om_bias_cor,
-      bias_cor_method=x[[i]]$bias_cor_method,
-      SRmodel=x[[i]]$SRmodel)
 
     if(x[[i]]$initial_equilibrium_F==FALSE){
       stocks[[i]]$year<-x[[i]]$year[1]:(x[[i]]$year[length(x[[i]]$year)]-1)
