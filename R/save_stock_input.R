@@ -3,7 +3,8 @@
 save_stock_input <- function(base_stock=TRUE, input_list=NULL, ...){
   if (base_stock==TRUE) {
     base_stock <- NULL
-    base_stock <- list(movement_matrix=movement_matrix,
+    base_stock <- list(recruit_transportation=recruit_transportation,
+                       movement_matrix=movement_matrix,
 
                        year=year,
                        ages=ages,
@@ -35,6 +36,9 @@ save_stock_input <- function(base_stock=TRUE, input_list=NULL, ...){
                        input.cv.survey=input.cv.survey,
                        n.survey=n.survey,
                        sel_survey=sel_survey,
+
+                       brp_f_vector=brp_f_vector,
+                       brp_f_option=brp_f_option,
 
                        logf_sd=logf_sd,
                        f_dev_change=f_dev_change,

@@ -79,7 +79,6 @@ run_om <- function(input_list=NULL,
       a1=input_list$stocks[[i]]$slope.mat,
       b1=input_list$stocks[[i]]$A50.mat) #maturity at age
     om_stocks[[i]]$proportion.female=rep(input_list$stocks[[i]]$female.proportion, nages) #proportion female at age
-
   }
 
   setwd(paste(maindir))
@@ -173,6 +172,7 @@ run_om <- function(input_list=NULL,
 
       ## Input data list
       temp <- list(
+        recruit_transportation=input_list$stocks[[i]]$recruit_transportation,
         movement_matrix=input_list$stocks[[i]]$movement_matrix,
         fleet_num=input_list$stocks[[i]]$fleet_num,
         survey_num=input_list$stocks[[i]]$survey_num,
@@ -218,7 +218,9 @@ run_om <- function(input_list=NULL,
         logR.resid=om_stocks[[i]]$logR.resid,
         logf.resid=om_stocks[[i]]$logf.resid,
         f=om_stocks[[i]]$f,
-        initial_equilibrium_F=input_list$stocks[[i]]$initial_equilibrium_F)
+        initial_equilibrium_F=input_list$stocks[[i]]$initial_equilibrium_F,
+        brp_f_vector = input_list$stocks[[i]]$brp_f_vector,
+        brp_f_option = input_list$stocks[[i]]$brp_f_option)
 
       om_input[[i]] <<- temp
     }
