@@ -83,8 +83,8 @@ run_om <- function(input_list=NULL,
 
   setwd(paste(maindir))
 
-  om_input <<- vector(mode="list", length=length(input_list$stocks))
-  names(om_input) <<- paste("stock", 1:length(om_input), sep="")
+  om_input <- vector(mode="list", length=length(input_list$stocks))
+  names(om_input) <- paste("stock", 1:length(om_input), sep="")
 
   for(om_sim in 1:input_list$om_sim_num){
 
@@ -222,11 +222,11 @@ run_om <- function(input_list=NULL,
         brp_f_vector = input_list$stocks[[i]]$brp_f_vector,
         brp_f_option = input_list$stocks[[i]]$brp_f_option)
 
-      om_input[[i]] <<- temp
+      om_input[[i]] <- temp
     }
 
 
-    om_output <<- popsim(x=om_input)
+    om_output <- popsim(x=om_input)
 
     for(i in 1:length(input_list$stocks)){
       if(input_list$stock[[i]]$initial_equilibrium_F==FALSE){
@@ -255,15 +255,15 @@ run_om <- function(input_list=NULL,
         survey_data[[i]]$survey_q[[x]] <- 1/mean(survey_annual_sum)
       }
 
-      om_output$stocks[[i]]$survey_age_comp <<- survey_data[[i]]$survey_age_comp
-      om_output$stocks[[i]]$survey_index <<- survey_data[[i]]$survey_index
-      om_output$stocks[[i]]$survey_q <<- survey_data[[i]]$survey_q
+      om_output$stocks[[i]]$survey_age_comp <- survey_data[[i]]$survey_age_comp
+      om_output$stocks[[i]]$survey_index <- survey_data[[i]]$survey_index
+      om_output$stocks[[i]]$survey_q <- survey_data[[i]]$survey_q
 
     }
 
     ## Generate observation data
     temp <- vector(mode="list", length=length(input_list$stocks))
-    for (i in length(temp)){
+    for (i in 1:length(temp)){
       temp[[i]] <- ObsModel(nyr=om_input[[i]]$nyr,
                             nages=om_input[[i]]$nages,
                             fleet_num=om_input[[i]]$fleet_num,
@@ -279,10 +279,11 @@ run_om <- function(input_list=NULL,
 
       temp[[i]]$cv.L <- input_list$stocks[[i]]$input.cv.L
       temp[[i]]$cv.survey <- input_list$stocks[[i]]$input.cv.survey
+      temp[[i]]$survey_q=om_output$stocks[[i]]$survey_q
     }
-    em_input <<- vector(mode="list", length=length(input_list$stocks))
+    em_input <- vector(mode="list", length=length(input_list$stocks))
     names(em_input) <- paste("stock", 1:length(input_list$stocks), sep="")
-    em_input <<- temp
+    em_input <- temp
 
     save(om_input, om_output, em_input, file=file.path(casedir, "output", subdir, paste("OM", om_sim, ".RData", sep="")))
 

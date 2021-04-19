@@ -18,14 +18,14 @@ popsim<-function(x){
     SSB<-biomass.mt<-abundance<-Z<-rep(0,x[[i]]$nyr) #quantities of interest (annual)
 
     L.mt<-L.knum<-vector(mode="list", length=x[[i]]$fleet_num)
+    L.mt <- lapply(1:length(L.mt), function(j) L.mt[[j]] <- rep(0,x[[i]]$nyr))
     names(L.mt) <- paste("fleet", 1:x[[i]]$fleet_num, sep="")
+    L.knum <- lapply(1:length(L.knum), function(j) L.knum[[j]] <- rep(0,x[[i]]$nyr))
     names(L.knum) <- paste("fleet", 1:x[[i]]$fleet_num, sep="")
-    invisible(sapply(1:length(L.mt), function(j) L.mt[[j]] <<- rep(0,x[[i]]$nyr)))
-    invisible(sapply(1:length(L.knum), function(j) L.knum[[j]] <<- rep(0,x[[i]]$nyr)))
 
     L.age<-vector(mode="list", length=x[[i]]$fleet_num)
+    L.age <- lapply(1:length(L.age), function(j) L.age[[j]] <- matrix(0, nrow=x[[i]]$nyr, ncol=x[[i]]$nages))
     names(L.age) <- paste("fleet", 1:x[[i]]$fleet_num, sep="")
-    invisible(sapply(1:length(L.age), function(j) L.age[[j]] <<- matrix(0, nrow=x[[i]]$nyr, ncol=x[[i]]$nages)))
 
     N.age<-FAA<-matrix(0, nrow=x[[i]]$nyr, ncol=x[[i]]$nages)
     stocks[[i]] <- list(
