@@ -6,7 +6,7 @@
 # remotes::install_github(repo="Bai-Li-NOAA/Age_Structured_Stock_Assessment_Model_Comparison",
 #                         ref="spatial-structure")
 # library(ASSAMC)
-
+#
 setwd("C:/Users/bai.li/Documents/Age_Structured_Stock_Assessment_Model_Comparison/")
 devtools::load_all()
 
@@ -16,9 +16,9 @@ maindir <- "C:/Users/bai.li/Documents/Age_Structured_Stock_Assessment_Model_Comp
 
 # Basic simulation settings -------------------------------------------------------------------
 
-om_sim_num <- 100 # total number of iterations per case
-keep_sim_num <- 100 # number of kept iterations per case
-figure_number <- 10 # number of individual iteration to plot
+om_sim_num <- 1 # total number of iterations per case
+keep_sim_num <- 1 # number of kept iterations per case
+figure_number <- 1 # number of individual iteration to plot
 
 seed_num <- 9924
 
@@ -119,9 +119,9 @@ sel_survey$survey1$slope.sel1 <- 2
 
 
 # Bilogical reference points F vectors --------------------------------------------------------
-brp_f_vector <- seq(0.0, 1, by=0.1)
-# brp_f_option <- "independentF" # other options: dependentF
-brp_f_option <- "dependentF" # other options: dependentF
+brp_f_vector <- seq(0.0, 1, by=0.001)
+brp_f_option <- "independentF" # options: independentF and dependentF
+# brp_f_option <- "dependentF" # options: independentF and dependentF
 
 #### Other settings ####
 logf_sd <- 0.2
@@ -146,26 +146,23 @@ stocks$stock1 <- save_stock_input(base_stock=TRUE)
 # Reset fleet selectivity
 sel_fleet <- list()
 sel_fleet$fleet1$pattern <- 1
-sel_fleet$fleet1$A50.sel1 <- 3
+sel_fleet$fleet1$A50.sel1 <- 4
 sel_fleet$fleet1$slope.sel1 <- 2
 stocks$stock2 <- save_stock_input(base_stock=FALSE,
                                   input_list=stocks$stock1,
-                                  logR_sd=0.8,
-                                  sel_fleet=sel_fleet)
+                                  median_h=0.8,
+                                  f_pattern=5,
+                                  start_val=0.01,
+                                  middle_val=0.6,
+                                  end_val=NULL,
+                                  f_val=NULL,
+                                  start_year=1,
+                                  middle_year=6)
 
 # Reset fleet selectivity
-sel_fleet <- list()
-sel_fleet$fleet1$pattern <- 1
-sel_fleet$fleet1$A50.sel1 <- 1
-sel_fleet$fleet1$slope.sel1 <- 3
-
-brp_f_vector = seq(0.5, 2.5, by=0.1)
 stocks$stock3 <- save_stock_input(base_stock=FALSE,
                                   input_list=stocks$stock1,
-                                  start_val=1,
-                                  end_val=2,
-                                  sel_fleet=sel_fleet,
-                                  brp_f_vector=brp_f_vector)
+                                  median_h=0.7)
 
 
 # Null case -----------------------------------------------------------------------------------
@@ -321,4 +318,5 @@ sum_yield <- om_output$stocks$stock1$msy$L_eq+
   om_output$stocks$stock2$msy$L_eq+
   om_output$stocks$stock3$msy$L_eq
 which.max(sum_yield)
-f_combinations[157,] #0.2, 0.3, 0.7
+f_combinations[which.max(sum_yield),]
+
