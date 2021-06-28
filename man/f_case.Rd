@@ -14,7 +14,8 @@ f_case(
   middle_year = NULL,
   nyr = 30,
   om_sim_num = 160,
-  f_dev_matrix = f_dev_matrix
+  f_dev_matrix = f_dev_matrix,
+  initial_equilibrium_F = TRUE
 )
 }
 \arguments{
