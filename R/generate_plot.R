@@ -32,10 +32,10 @@ generate_plot <- function(em_names = NULL,
   figure_number <- input_list$figure_number
 
   #### Check convergence and plot gradient histogram ####
-  keep_sim_id <- check_convergence(em_names, om_sim_num, col = col, plot_ncol, plot_nrow, casedir = casedir)
+  keep_sim_id <<- check_convergence(em_names, om_sim_num, col = col, plot_ncol, plot_nrow, casedir = casedir)
 
   if (length(na.omit(keep_sim_id)) < keep_sim_num) cat("Increase om_sim_num to get enough number of converged iterations!")
-  keep_sim_id <- na.omit(keep_sim_id)
+  keep_sim_id <<- na.omit(keep_sim_id)
   keep_sim_num <- length(keep_sim_id)
   input_list$keep_sim_num <- length(keep_sim_id)
 
