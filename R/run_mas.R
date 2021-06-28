@@ -15,16 +15,16 @@ run_mas <- function(maindir = maindir, subdir = "MAS", om_sim_num = NULL, casedi
 
   for (om_sim in 1:om_sim_num) {
     load(file=file.path(casedir, "output", "OM", paste("OM", om_sim, ".RData", sep="")))
-    
+
     r4mas <- Rcpp::Module("rmas", PACKAGE = "r4MAS")
-    
+
     nyears <- om_input$nyr
     nseasons <- 1
     nages <- om_input$nages
     ages <- om_input$ages
     area1 <- new(r4mas$Area)
     area1$name <- "area1"
-    
+
     recruitment <- new(r4mas$BevertonHoltRecruitment)
     recruitment$R0$value <- om_input$R0 / 1000
     recruitment$R0$estimated <- TRUE
@@ -46,7 +46,7 @@ run_mas <- function(maindir = maindir, subdir = "MAS", om_sim_num = NULL, casedi
     recruitment$deviation_phase <- 2
     recruitment$SetDeviations(om_input$logR.resid)
     recruitment$use_bias_correction <- FALSE
-    
+
     growth <- new(r4mas$VonBertalanffyModified)
     empirical_weight <- rep(om_input$W.kg, times = om_input$nyr)
     survey_empirical_weight <- replicate(nages * nyears, 1.0)
@@ -54,24 +54,24 @@ run_mas <- function(maindir = maindir, subdir = "MAS", om_sim_num = NULL, casedi
     growth$SetUndifferentiatedWeightAtSeasonStart(empirical_weight)
     growth$SetUndifferentiatedWeightAtSpawning(empirical_weight)
     growth$SetUndifferentiatedSurveyWeight(survey_empirical_weight)
-    
+
     maturity <- new(r4mas$Maturity)
     maturity$values <- om_input$mat.age * 0.5
-    
+
     natural_mortality <- new(r4mas$NaturalMortality)
     natural_mortality$SetValues(om_input$M.age)
-    
+
     # Only 1 area in this model
     movement <- new(r4mas$Movement)
     movement$connectivity_females <- c(0.0)
     movement$connectivity_males <- c(0.0)
     movement$connectivity_recruits <- c(0.0)
-    
+
     initial_deviations <- new(r4mas$InitialDeviations)
     initial_deviations$values <- rep(0.0, times = om_input$nages)
     initial_deviations$estimate <- TRUE
     initial_deviations$phase <- 2
-    
+
     population <- new(r4mas$Population)
     for (y in 1:(nyears))
     {
@@ -83,7 +83,7 @@ run_mas <- function(maindir = maindir, subdir = "MAS", om_sim_num = NULL, casedi
     population$SetInitialDeviations(initial_deviations$id, area1$id, "undifferentiated")
     population$SetGrowth(growth$id)
     population$sex_ratio <- 0.5
-    
+
     # Catch index values and observation errors
     catch_index <- new(r4mas$IndexData)
     catch_index$values <- em_input$L.obs$fleet1
@@ -123,7 +123,7 @@ run_mas <- function(maindir = maindir, subdir = "MAS", om_sim_num = NULL, casedi
     fleet$SetAgeCompNllComponent(fleet_age_comp_nll$id)
     fleet$AddSelectivity(fleet_selectivity$id, 1, area1$id)
     fleet$AddFishingMortality(fishing_mortality$id, 1, area1$id)
-    
+
     # Survey index values and observation errors
     survey_index <- new(r4mas$IndexData)
     survey_index$values <- em_input$survey.obs$survey1
@@ -161,7 +161,7 @@ run_mas <- function(maindir = maindir, subdir = "MAS", om_sim_num = NULL, casedi
     survey$q$max <- 10
     survey$q$estimated <- TRUE
     survey$q$phase <- 1
-    
+
     mas_model <- new(r4mas$MASModel)
     mas_model$nyears <- nyears
     mas_model$nseasons <- nseasons
@@ -175,11 +175,12 @@ run_mas <- function(maindir = maindir, subdir = "MAS", om_sim_num = NULL, casedi
     mas_model$AddFleet(fleet$id)
     mas_model$AddSurvey(survey$id)
     mas_model$tolerance <- 0.0001
-    
+
     # Run MAS
     mas_model$Run()
     output_file <- file.path(casedir, "output", subdir, paste("s", om_sim, sep = ""), paste("s", om_sim, ".json", sep = ""))
     write(mas_model$GetOutput(), file = toString(output_file))
     mas_model$Reset()
+    rm(mas_model)
   }
 }
