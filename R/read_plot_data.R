@@ -6,7 +6,7 @@
 #' @param keep_sim_num Final number of iterations saved for a case
 #' @param adhoc_bias_cor Use ad hoc bias correction in recruitment? The default setting is FALSE.
 #' @param SRmodel Spawner-recruit model. 1 = Beverton-Holt model; 2 = Ricker model
-#' 
+#'
 #' @export
 ## Aggregate data of biomass, abundance, SSB, recruitment, F (apical F*selectivity), F multiplier, landings, and survey from models to matrix
 read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc_bias_cor=FALSE, SRmodel=1){
@@ -449,7 +449,7 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
 
   ## MAS
   if ("MAS" %in% em_names){
-    library(jsonlite)
+
     mas_biomass <- mas_abundance <- mas_ssb <- mas_recruit <- mas_Ftot <- mas_Fmul <- mas_landing <- mas_survey <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
     mas_msy <- mas_fmsy <- mas_ssbmsy <- matrix(NA, nrow=1, ncol=keep_sim_num)
     mas_fratio <- mas_ssbratio <- matrix(NA, nrow=om_input$nyr, ncol=keep_sim_num)
@@ -482,7 +482,6 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
       mas_ssbratio[, om_sim] <- mas_ssb[,om_sim]/mas_ssbmsy[om_sim]
       mas_agecomp[[om_sim]] <- apply(matrix(unlist(pop$undifferentiated$numbers_at_age$values), nrow=popdy$nyears, ncol=popdy$nages, byrow = T), 1, function(x) x/sum(x))
 
-      
       parameter <- unlist(mas_output$estimated_parameters$parameters)
       parameter_table <- as.data.frame(matrix(parameter, ncol = 3, byrow = TRUE))
       colnames(parameter_table) <- c(
@@ -490,11 +489,11 @@ read_plot_data <- function(em_names=NULL, casedir=NULL, keep_sim_num=NULL, adhoc
         "Value",
         "Gradient"
       )
-      
-      mas_geomR0[, om_sim] <- exp(parameter_table$Value[parameter_table$Parameter == "log_R0_1"])
+
+      mas_geomR0[, om_sim] <- exp(as.numeric(parameter_table$Value[parameter_table$Parameter == "log_R0_1"]))
       mas_geomS0[, om_sim] <- 0
       mas_geomDf[, om_sim] <- 0
-      mas_arimR0[, om_sim] <- exp(parameter_table$Value[parameter_table$Parameter == "log_R0_1"])
+      mas_arimR0[, om_sim] <- exp(as.numeric(parameter_table$Value[parameter_table$Parameter == "log_R0_1"]))
       mas_arimS0[, om_sim] <- 0
       mas_arimDf[, om_sim] <- 0
 
