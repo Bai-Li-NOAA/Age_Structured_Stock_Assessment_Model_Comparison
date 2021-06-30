@@ -16,6 +16,7 @@ run_mas <- function(maindir = maindir, subdir = "MAS", om_sim_num = NULL, casedi
   for (om_sim in 1:om_sim_num) {
     load(file=file.path(casedir, "output", "OM", paste("OM", om_sim, ".RData", sep="")))
 
+    library(r4MAS)
     r4mas <- Rcpp::Module("rmas", PACKAGE = "r4MAS")
 
     nyears <- om_input$nyr
@@ -174,13 +175,12 @@ run_mas <- function(maindir = maindir, subdir = "MAS", om_sim_num = NULL, casedi
     mas_model$AddPopulation(population$id)
     mas_model$AddFleet(fleet$id)
     mas_model$AddSurvey(survey$id)
-    mas_model$tolerance <- 0.0001
+    # mas_model$tolerance <- 0.0001
 
     # Run MAS
     mas_model$Run()
     output_file <- file.path(casedir, "output", subdir, paste("s", om_sim, sep = ""), paste("s", om_sim, ".json", sep = ""))
     write(mas_model$GetOutput(), file = toString(output_file))
     mas_model$Reset()
-    rm(mas_model)
   }
 }
